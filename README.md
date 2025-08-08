@@ -86,6 +86,7 @@ Set options via `data-scradar` attribute:
 
 ### Progress Types
 | Option          | Description                      | Range                                 |
+| --------------- | -------------------------------- | ------------------------------------- |
 | ⁠progressVisible | Element visibility progress      | 0 (before) ~ 1 (after)                |
 | ⁠progressFill    | Fill progress for large elements | -1 (before) ~ 0 (filling) ~ 1 (after) |
 | ⁠progressFull    | Full coverage progress           | 0 (not full) ~ 1 (full)               |
@@ -193,11 +194,13 @@ const scradar = new Scradar(target?, options?);
 
 ### Methods
 | Method    | Description                       |
+| --------- | --------------------------------- |
 | ⁠update()  | Manually update all elements      |
 | ⁠destroy() | Clean up and remove all listeners |
 
 ### Properties
 | Property | Description                         |
+| -------- | ----------------------------------- |
 | ⁠elements | Array of tracked elements           |
 | ⁠scroll   | Current scroll direction (-1, 0, 1) |
 | ⁠progress | Total scroll progress (0-1)         |
@@ -207,6 +210,7 @@ const scradar = new Scradar(target?, options?);
 - Firefox 78+
 - Safari 14+
 - iOS Safari 14+
+
 Requires:
 - IntersectionObserver
 - CSS Custom Properties
