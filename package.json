@@ -1,0 +1,81 @@
+{
+  "name": "scradar",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CSS-first scroll interaction library with progress-based animations",
+  "author": "andor works <hello@andor.works>",
+  "license": "MIT",
+  "keywords": [
+    "scroll",
+    "scrolltrigger",
+    "animation",
+    "css",
+    "progress",
+    "intersection-observer",
+    "react",
+    "vue",
+    "vanilla"
+  ],
+  "main": "dist/scradar.umd.js",
+  "module": "dist/scradar.esm.js",
+  "unpkg": "dist/scradar.min.js",
+  "jsdelivr": "dist/scradar.min.js",
+  "types": "dist/scradar.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/scradar.esm.js",
+      "require": "./dist/scradar.umd.js",
+      "types": "./dist/scradar.d.ts"
+    },
+    "./react": {
+      "import": "./frameworks/react/index.js",
+      "types": "./frameworks/react/index.d.ts"
+    },
+    "./vue": {
+      "import": "./frameworks/vue/index.js",
+      "types": "./frameworks/vue/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "frameworks",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c && npm run build:types",
+    "build:types": "cp src/scradar.d.ts dist/scradar.d.ts",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "jest --config test/e2e/jest.config.js",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "prepublishOnly": "npm run lint && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@eslint/js": "^9.32.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "eslint": "^9.15.0",
+    "globals": "^16.3.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-puppeteer": "^9.0.0",
+    "puppeteer": "^24.9.0",
+    "rollup": "^4.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andorworks/Scradar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andorworks/Scradar/issues"
+  },
+  "homepage": "https://github.com/andorworks/Scradar#readme"
+}
