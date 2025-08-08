@@ -6,14 +6,10 @@ describe('Scradar', () => {
   beforeEach(() => {
     // Reset document body
     document.body.innerHTML = `
-      <div class="scradar" 
-           data-scradar='{"progressVisible": true, "visibleStep": [0.25, 0.5, 0.75]}'
-           style="height: 500px;">
+      <div class="scradar" data-scradar="{visibility: true, visibilityStep: [0.25, 0.5, 0.75]}" style="height: 500px;">
         Target 1
       </div>
-      <div class="scradar" 
-           data-scradar='{"progressFill": true, "peak": [0, 0.5, 1]}'
-           style="height: 1000px;">
+      <div class="scradar" data-scradar="{fill: true, peak: [0, 0.5, 1]}" style="height: 1000px;">
         Target 2
       </div>
     `;
@@ -69,8 +65,8 @@ describe('Scradar', () => {
   test('should parse data-scradar options correctly', () => {
     scradar = new Scradar();
     const el = document.querySelector('.scradar');
-    expect(el.scradar.settings.progressVisible).toEqual(['css']);
-    expect(el.scradar.settings.visibleStep).toEqual([-9999, 0.25, 0.5, 0.75, 9999]);
+    expect(el.scradar.settings.visibility).toEqual(['css']);
+    expect(el.scradar.settings.visibilityStep).toEqual([-9999, 0.25, 0.5, 0.75, 9999]);
   });
   
   test('should update progress values on scroll', async () => {
@@ -84,9 +80,9 @@ describe('Scradar', () => {
     // Wait for async updates
     await new Promise(resolve => setTimeout(resolve, 20));
     
-    expect(el.scradar.progressVisible).toBeDefined();
-    expect(el.scradar.progressVisible).toBeGreaterThanOrEqual(0);
-    expect(el.scradar.progressVisible).toBeLessThanOrEqual(1);
+    expect(el.scradar.visibility).toBeDefined();
+    expect(el.scradar.visibility).toBeGreaterThanOrEqual(0);
+    expect(el.scradar.visibility).toBeLessThanOrEqual(1);
   });
   
   test('should update scradarIn attribute when element enters viewport', () => {
@@ -94,14 +90,14 @@ describe('Scradar', () => {
     const el = document.querySelector('.scradar');
     
     // Test the data attribute update logic
-    el.scradar.progressVisible = 0; // Not visible
+    el.scradar.visibility = 0; // Not visible
     el.dataset.scradarIn = '0';
     
     // Element becomes visible
-    el.scradar.progressVisible = 0.5;
+    el.scradar.visibility = 0.5;
     
     // Manually update the attribute as the controller would
-    if (el.scradar.progressVisible > 0 && el.scradar.progressVisible < 1) {
+    if (el.scradar.visibility > 0 && el.scradar.visibility < 1) {
       el.dataset.scradarIn = '1';
     }
     
@@ -135,13 +131,13 @@ describe('Scradar', () => {
     });
     
     // Force progress change
-    el.scradar.progressVisible = 0.3;
+    el.scradar.visibility = 0.3;
     el.scradar.update();
     
     await new Promise(resolve => setTimeout(resolve, 20));
     
     if (stepChangeData) {
-      expect(stepChangeData.type).toBe('visible');
+      expect(stepChangeData.type).toBe('visibility');
       expect(stepChangeData.step).toBeDefined();
     }
   });
@@ -170,7 +166,7 @@ describe('Scradar', () => {
   
   test('should handle custom target selector', () => {
     document.body.innerHTML += `
-      <div class="custom-target" data-scradar='{"progressVisible": true}'></div>
+      <div class="custom-target" data-scradar="{visibility: true}"></div>
     `;
     
     scradar = new Scradar('.custom-target');

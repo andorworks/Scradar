@@ -27,8 +27,8 @@
     .scradar {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      opacity: calc(0.3 + var(--progress-visible, 0) * 0.7);
-      transform: translateY(calc((1 - var(--progress-visible, 0)) * 50px));
+      opacity: calc(0.3 + var(--visibility, 0) * 0.7);
+      transform: translateY(calc((1 - var(--visibility, 0)) * 50px));
       transition: opacity 0.3s, transform 0.3s;
     }
     
@@ -59,7 +59,7 @@
     Section 2
   </div>
   
-  <div class="section scradar" data-scradar='{"progressFull": true, "once": true}' data-scradar-title="Section 3">
+  <div class="section scradar" data-scradar="{cover: true, once: true}" data-scradar-title="Section 3">
     Section 3
   </div>
   
@@ -71,11 +71,11 @@
     // Configuration file approach (supports both static and dynamic configs)
     Scradar.configs = {
       section1: {
-        progressVisible: true,
-        visibleStep: [0.25, 0.5, 0.75]
+        visibility: true,
+        visibilityStep: [0.25, 0.5, 0.75]
       },
       section2: (element) => ({
-        progressFill: true,
+        fill: true,
         peak: [0, 0.5, 1]
       })
     };

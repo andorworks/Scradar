@@ -104,8 +104,8 @@ describe('Scradar E2E Tests', () => {
     await page.waitForTimeout(100);
 
     const progressValue = await page.evaluate(() => {
-      const el = document.querySelector('[data-scradar*="progressVisible"]');
-      return getComputedStyle(el).getPropertyValue('--progress-visible');
+      const el = document.querySelector('[data-scradar*="visibility"]');
+      return getComputedStyle(el).getPropertyValue('--visibility');
     });
 
     expect(progressValue).toBeTruthy();
@@ -118,7 +118,7 @@ describe('Scradar E2E Tests', () => {
 
     await page.evaluateHandle(() => {
       window.stepChangeData = null;
-      const el = document.querySelector('[data-scradar*="visibleStep"]');
+      const el = document.querySelector('[data-scradar*="visibilityStep"]');
       if (el) {
         el.addEventListener('stepChange', (e) => {
           window.stepChangeData = e.detail;

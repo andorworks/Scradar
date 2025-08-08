@@ -23,16 +23,16 @@ export default class ScradarController {
     this.containerSize = 0;
     
     // Progress values
-    this.progressVisible = 0;
-    this.progressFill = 0;
-    this.progressFull = 0;
-    this.progressStart = 0;
-    this.progressEnd = 0;
-    this.progressPeak = 0;
+    this.visibility = 0;
+    this.fill = 0;
+    this.cover = 0;
+    this.enter = 0;
+    this.exit = 0;
+    this.peak = 0;
     
     // Offset values
-    this.offsetStart = 0;
-    this.offsetEnd = 0;
+    this.offsetEnter = 0;
+    this.offsetExit = 0;
     
     // State tracking
     this.wasIn = false;
@@ -40,11 +40,11 @@ export default class ScradarController {
     this.isFull = false;
     
     // Step tracking
-    this.currentVisibleStep = null;
+    this.currentVisibilityStep = null;
     this.currentFillStep = null;
-    this.currentFullStep = null;
-    this.currentStartStep = null;
-    this.currentEndStep = null;
+    this.currentCoverStep = null;
+    this.currentEnterStep = null;
+    this.currentExitStep = null;
     
     this.#init();
   }
@@ -86,8 +86,8 @@ export default class ScradarController {
 
   #parseProgressOptions() {
     const progressTypes = [
-      'progressVisible', 'progressFill', 'progressFull', 
-      'progressStart', 'progressEnd', 'offsetStart', 'offsetEnd'
+      'visibility', 'fill', 'cover', 
+      'enter', 'exit', 'offsetEnter', 'offsetExit'
     ];
     
     progressTypes.forEach(type => {
@@ -273,50 +273,50 @@ export default class ScradarController {
   }
 
   #calculateProgress(elStart, elEnd, elSize, containerSize, sizeGap, delayOffset) {
-    // progressVisible: 0 (before) ~ 1 (after)
-    this.progressVisible = elEnd / (-containerSize - elSize) + 1;
-    this.progressVisible = Math.max(0, Math.min(1, this.progressVisible));
+    // visibility: 0 (before) ~ 1 (after)
+    this.visibility = elEnd / (-containerSize - elSize) + 1;
+    this.visibility = Math.max(0, Math.min(1, this.visibility));
     
-    // progressFill: -1 (before) ~ 0 (filling) ~ 1 (after)
-    if (this.settings.progressFill) {
+    // fill: -1 (before) ~ 0 (filling) ~ 1 (after)
+    if (this.settings.fill) {
       if (elSize > containerSize) {
         if (elStart <= 0 && elStart >= -sizeGap) {
-          this.progressFill = 0;
+          this.fill = 0;
         } else if (elStart < -sizeGap) {
-          this.progressFill = 1 - (elStart + elSize) / containerSize;
+          this.fill = 1 - (elStart + elSize) / containerSize;
         } else {
-          this.progressFill = -elStart / containerSize;
+          this.fill = -elStart / containerSize;
         }
       } else {
         // Element is smaller than container
-        this.progressFill = -elStart / (elSize > containerSize ? containerSize : elSize);
+        this.fill = -elStart / (elSize > containerSize ? containerSize : elSize);
       }
-      this.progressFill = Math.max(-1, Math.min(1, this.progressFill));
+      this.fill = Math.max(-1, Math.min(1, this.fill));
     }
     
-    // progressFull: 0 (before) ~ 1 (after)
-    if (this.settings.progressFull && elSize > containerSize) {
-      const progressFull = ((elStart + delayOffset) / -sizeGap);
-      this.progressFull = Math.max(0, Math.min(1, progressFull));
+    // cover: 0 (before) ~ 1 (after)
+    if (this.settings.cover && elSize > containerSize) {
+      const cover = ((elStart + delayOffset) / -sizeGap);
+      this.cover = Math.max(0, Math.min(1, cover));
     } else {
-      this.progressFull = 0;
+      this.cover = 0;
     }
     
-    // progressStart & progressEnd
+    // enter & exit
     const contentSize = elSize - delayOffset;
-    this.progressStart = (elEnd / -containerSize) * (containerSize / contentSize) + 1;
-    this.progressEnd = (elStart + sizeGap) / (containerSize + sizeGap);
+    this.enter = (elEnd / -containerSize) * (containerSize / contentSize) + 1;
+    this.exit = (elStart + sizeGap) / (containerSize + sizeGap);
     
-    // progressPeak
+    // peak
     if (this.settings.peak && this.settings.peak.peak !== undefined) {
       const { start, peak, end } = this.settings.peak;
-      if (this.progressVisible < start || this.progressVisible > end) {
-        this.progressPeak = 0;
+      if (this.visibility < start || this.visibility > end) {
+        this.peak = 0;
       } else {
-        this.progressPeak = this.progressVisible <= peak
-          ? (this.progressVisible - start) / (peak - start)
-          : (end - this.progressVisible) / (end - peak);
-        this.progressPeak = Math.max(0, Math.min(1, this.progressPeak));
+        this.peak = this.visibility <= peak
+          ? (this.visibility - start) / (peak - start)
+          : (end - this.visibility) / (end - peak);
+        this.peak = Math.max(0, Math.min(1, this.peak));
       }
     }
   }
@@ -328,52 +328,52 @@ export default class ScradarController {
     const targets = [this.el, ...receiver];
     
     // Update progress values
-    if (this.settings.progressVisible) {
-      updateDataAndCss(targets, this.settings, 'progressVisible', this.progressVisible);
-      this.#fireProgressEvent('progressVisible', this.progressVisible);
+    if (this.settings.visibility) {
+      updateDataAndCss(targets, this.settings, 'visibility', this.visibility);
+      this.#fireProgressEvent('visibility', this.visibility);
     }
     
-    if (this.settings.progressFill) {
-      updateDataAndCss(targets, this.settings, 'progressFill', this.progressFill);
-      this.#fireProgressEvent('progressFill', this.progressFill);
+    if (this.settings.fill) {
+      updateDataAndCss(targets, this.settings, 'fill', this.fill);
+      this.#fireProgressEvent('fill', this.fill);
     }
     
-    if (this.settings.progressFull) {
-      updateDataAndCss(targets, this.settings, 'progressFull', this.progressFull);
-      this.#fireProgressEvent('progressFull', this.progressFull);
+    if (this.settings.cover) {
+      updateDataAndCss(targets, this.settings, 'cover', this.cover);
+      this.#fireProgressEvent('cover', this.cover);
     }
     
-    if (this.settings.progressStart) {
-      updateDataAndCss(targets, this.settings, 'progressStart', this.progressStart);
-      this.#fireProgressEvent('progressStart', this.progressStart);
+    if (this.settings.enter) {
+      updateDataAndCss(targets, this.settings, 'enter', this.enter);
+      this.#fireProgressEvent('enter', this.enter);
     }
     
-    if (this.settings.progressEnd) {
-      updateDataAndCss(targets, this.settings, 'progressEnd', this.progressEnd);
-      this.#fireProgressEvent('progressEnd', this.progressEnd);
+    if (this.settings.exit) {
+      updateDataAndCss(targets, this.settings, 'exit', this.exit);
+      this.#fireProgressEvent('exit', this.exit);
     }
     
-    if (this.progressPeak !== undefined && this.settings.peak) {
-      updateDataAndCss(targets, this.settings, 'progressPeak', this.progressPeak);
-      this.#fireProgressEvent('progressPeak', this.progressPeak);
+    if (this.peak !== undefined && this.settings.peak) {
+      updateDataAndCss(targets, this.settings, 'peak', this.peak);
+      this.#fireProgressEvent('peak', this.peak);
     }
     
     // Update offset values
-    if (this.settings.offsetStart) {
-      const offsetStart = this.settings.horizontal 
+    if (this.settings.offsetEnter) {
+      const offsetEnter = this.settings.horizontal 
         ? this.el.getBoundingClientRect().left 
         : this.el.getBoundingClientRect().top;
-      updateDataAndCss(targets, this.settings, 'offsetStart', offsetStart);
-      this.#fireProgressEvent('offsetStart', offsetStart);
+      updateDataAndCss(targets, this.settings, 'offsetEnter', offsetEnter);
+      this.#fireProgressEvent('offsetEnter', offsetEnter);
     }
     
-    if (this.settings.offsetEnd) {
+    if (this.settings.offsetExit) {
       const rect = this.el.getBoundingClientRect();
-      const offsetEnd = this.settings.horizontal
+      const offsetExit = this.settings.horizontal
         ? this.containerSize - rect.right
         : this.containerSize - rect.bottom;
-      updateDataAndCss(targets, this.settings, 'offsetEnd', offsetEnd);
-      this.#fireProgressEvent('offsetEnd', offsetEnd);
+      updateDataAndCss(targets, this.settings, 'offsetExit', offsetExit);
+      this.#fireProgressEvent('offsetExit', offsetExit);
     }
   }
 
@@ -384,11 +384,11 @@ export default class ScradarController {
   }
 
   #checkSteps() {
-    ['visible', 'fill', 'full', 'start', 'end'].forEach(type => {
+    ['visibility', 'fill', 'cover', 'enter', 'exit'].forEach(type => {
       const stepKey = `${type}Step`;
       if (!Array.isArray(this.settings[stepKey])) return;
       
-      const progress = this[`progress${capitalize(type)}`];
+      const progress = this[type];
       const steps = this.settings[stepKey];
       let currentStep = null;
       
