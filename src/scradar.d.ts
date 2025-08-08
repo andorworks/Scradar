@@ -96,6 +96,7 @@ declare global {
 
 declare class Scradar {
   static defaults: ScradarOptions;
+  static configs: Record<string, ScradarSettings | ((element: HTMLElement) => ScradarSettings)>;
   
   constructor(target?: string | ScradarOptions, options?: ScradarOptions);
   
@@ -115,3 +116,26 @@ declare class Scradar {
 export default Scradar;
 
 export = Scradar;
+
+// React helper functions
+export function setScradarConfigs(configs: Record<string, ScradarSettings | ((element: HTMLElement) => ScradarSettings)>): void;
+
+// Vue helper functions (for Vue 3)
+export interface VueApp {
+  config: {
+    globalProperties: {
+      $scradar: typeof Scradar;
+      $scradarConfigs: (configs: Record<string, ScradarSettings | ((element: HTMLElement) => ScradarSettings)>) => void;
+    };
+  };
+  directive: (name: string, options: any) => void;
+  use: (plugin: any, options?: any) => void;
+}
+
+// Vue 2 compatibility
+export interface Vue2 {
+  directive: (name: string, options: any) => void;
+  prototype: {
+    $scradar: typeof Scradar;
+  };
+}

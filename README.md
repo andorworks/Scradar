@@ -6,6 +6,18 @@ CSS-first scroll interaction library with progress-based animations.
 [![npm version](https://badge.fury.io/js/scradar.svg)](https://www.npmjs.com/package/scradar)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## 🤔 Why Scradar?
+
+Scradar was born from a different perspective on scroll-based animations. While many libraries focus on script-driven animation control, we found this approach to be complex and time-consuming during development.
+
+**Scradar's core idea is simple:**
+- **Scripts focus solely on reading scroll information**
+- **Animations are handled by CSS**
+
+This approach allows you to debug and fine-tune animations in real-time using browser developer tools, making the development process much more efficient.
+
+**Scradar** is a combination of **Scroll** and **Radar**, meaning "to observe scroll" - perfectly describing its role as a scroll observation tool.
+
 ## ✨ Features
 
 - 🎯 **CSS-first approach** - Control animations with CSS custom properties
@@ -41,13 +53,22 @@ npm install scradar
 
 ### React
 ```js
-import { useScradar } from 'scradar/react';
+import { useScradar, setScradarConfigs } from 'scradar/react';
+
+// Global configurations (supports both static and dynamic)
+setScradarConfigs({
+  section1: { progressVisible: true, visibleStep: [0.25, 0.5, 0.75] },
+  section2: (element) => ({
+    progressVisible: true,
+    once: element.classList.contains('once-only')
+  })
+});
 
 function App() {
   const scradar = useScradar({ debug: true });
   
   return (
-    <div className="scradar" data-scradar='{"progressVisible": true}'>
+    <div className="scradar" data-scradar-config="section1">
       Content
     </div>
   );
@@ -64,11 +85,22 @@ function App() {
 
 <script>
 import ScradarVue from 'scradar/vue';
+
 app.use(ScradarVue);
+
+// Global configurations (supports both static and dynamic)
+app.config.globalProperties.$scradarConfigs({
+  section1: { progressVisible: true, visibleStep: [0.25, 0.5, 0.75] },
+  section2: (element) => ({
+    progressVisible: true,
+    once: element.classList.contains('once-only')
+  })
+});
 </script>
 ```
 
 ## ⚙️ Options
+
 | Option          | Type           | Default    | Description                           |
 | --------------- | -------------- | ---------- | ------------------------------------- |
 | ⁠`target`        | String         | '.scradar' | Target selector                       |
@@ -76,12 +108,35 @@ app.use(ScradarVue);
 | ⁠`totalProgress` | Boolean        | true       | Track total scroll progress           |
 | ⁠`boundary`      | Boolean/Number | false      | Boundary detection for active targets |
 
-## 🎯 Element Options
+## 🎨 Element Configuration
 
-Set options via `data-scradar` attribute:
+Scradar supports two ways to configure elements with different priorities:
 
+### 1. Configuration File (Highest Priority)
 ```html
-<div class="scradar" data-scradar='{"progressVisible": true, "visibleStep": [0.25, 0.5, 0.75]}'>
+<div class="scradar" data-scradar-config="section1">
+</div>
+
+<script>
+Scradar.configs = {
+  // Static configuration
+  section1: {
+    progressVisible: true,
+    visibleStep: [0.25, 0.5, 0.75]
+  },
+  // Dynamic configuration (function)
+  section2: (element) => ({
+    progressFill: true,
+    peak: [0, 0.5, 1],
+    once: element.classList.contains('once-only')
+  })
+};
+</script>
+```
+
+### 2. Inline JSON (Lowest Priority)
+```html
+<div class="scradar" data-scradar="{progressVisible: true, visibleStep: [0.25, 0.5, 0.75]}">
 ```
 
 ### Progress Types
@@ -179,6 +234,7 @@ Apply progress to other elements:
 ```
 
 ## 🐛 Debug Mode
+
 Enable visual debugging overlay:
 ```js
 const scradar = new Scradar({ debug: true });
@@ -217,14 +273,17 @@ Requires:
 - ES6 Modules (for ESM build)
 
 ## 💖 Sponsorship
+
 Scradar.js is an open-source project that I'm developing and maintaining in my spare time. If you find this library useful, please consider supporting its development. Your support helps me dedicate more time to new features, improvements, and maintenance.
 
 <a href="https://buymeacoffee.com/andorworks" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="171" height="48">
 </a>
 
 ## 📄 License
+
 MIT © andor works
 
 ## 🤝 Contributing
+
 Contributions are welcome! Please feel free to submit a Pull Request.

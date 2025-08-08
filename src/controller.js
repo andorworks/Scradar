@@ -1,5 +1,6 @@
 import { 
   parseOptions, 
+  parseElementOptions,
   updateDataAndCss, 
   capitalize, 
   eventSpeaker,
@@ -7,12 +8,12 @@ import {
 } from './utils.js';
 
 export default class ScradarController {
-  constructor(el, globalOptions, shadowDom) {
+  constructor(el, globalOptions, shadowDom, globalConfigs = {}) {
     this.el = el;
     this.shadowDom = shadowDom;
     this.settings = { 
       ...globalOptions, 
-      ...(el.dataset.scradar ? parseOptions(el.dataset.scradar) : {}) 
+      ...parseElementOptions(el, globalConfigs)
     };
     this.init = false;
     this.triggerId = null;
