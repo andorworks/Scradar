@@ -166,15 +166,13 @@ export default class ScradarDebug {
       const ctrl = el.scradar;
       if (!ctrl) return;
       
-      const title = el.dataset.scradarTitle || 
-                   el.className || 
-                   el.tagName.toLowerCase();
+      const title = el.dataset.scradarTitle || el.className || el.tagName.toLowerCase();
       const isIn = +el.dataset.scradarIn;
       
       html += `
         <div class="scradar-debug-target">
           <div class="scradar-debug-target-title">
-            #${idx + 1} ${title} ${isIn ? '👁' : ''}
+            #${idx + 1} ${title} ${isIn ? '🐵' : '🙈'}
           </div>
           <div class="scradar-debug-progress">
             ${ctrl.progressVisible !== undefined ? `
@@ -208,8 +206,7 @@ export default class ScradarDebug {
           </div>
           ${ctrl.progressVisible !== undefined ? `
             <div class="scradar-debug-progress-bar">
-              <div class="scradar-debug-progress-fill" 
-                   style="width: ${ctrl.progressVisible * 100}%"></div>
+              <div class="scradar-debug-progress-fill" style="width: ${ctrl.progressVisible * 100}%"></div>
             </div>
           ` : ''}
         </div>
