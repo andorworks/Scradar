@@ -18,6 +18,54 @@ export function parseOptions(str) {
   }
 }
 
+export function parseElementOptions(element, globalConfigs = {}) {
+  const scradarValue = element.dataset.scradar;
+  const configKey = element.dataset.scradarConfig;
+  
+  // 1. Configuration file check (supports both static and dynamic configs)
+  if (configKey) {
+    // Check global configuration
+    if (window.scradarConfigs && window.scradarConfigs[configKey]) {
+      const config = window.scradarConfigs[configKey];
+      // If config is a function, call it with the element
+      if (typeof config === 'function') {
+        return config(element);
+      }
+      return config;
+    }
+    // Check Scradar-specific configuration
+    if (globalConfigs.configs && globalConfigs.configs[configKey]) {
+      const config = globalConfigs.configs[configKey];
+      // If config is a function, call it with the element
+      if (typeof config === 'function') {
+        return config(element);
+      }
+      return config;
+    }
+  }
+  
+  // 2. Inline JSON check
+  if (scradarValue) {
+    try {
+      return JSON.parse(
+        scradarValue
+          .replace(/'/g, '"')
+          .replace(/([\w\d]+):/g, '"$1":')
+          .replace(/:"([^"]+)"/g, (match, p1) => {
+            if (p1.startsWith('"') && p1.endsWith('"')) {
+              return ':' + p1;
+            }
+            return ':"' + p1 + '"';
+          })
+      );
+    } catch (e) {
+      console.warn('Scradar: Failed to parse options', scradarValue, e);
+    }
+  }
+  
+  return {};
+}
+
 export function updateDataAndCss(targets, settings, type, value) {
   if (!settings[type] && type !== 'progressPeak') return;
   

@@ -51,15 +51,15 @@
 <body>
   <div class="section">Scroll Down ↓</div>
   
-  <div class="section scradar" data-scradar="{progressVisible: true, visibleStep: [0.25, 0.5, 0.75]}" data-scradar-title="Section 1">
+  <div class="section scradar" data-scradar-config="section1" data-scradar-title="Section 1">
     Section 1
   </div>
   
-  <div class="section scradar" data-scradar="{progressFill: true, peak: [0, 0.5, 1]}" data-scradar-title="Section 2">
+  <div class="section scradar" data-scradar-config="section2" data-scradar-title="Section 2">
     Section 2
   </div>
   
-  <div class="section scradar" data-scradar="{progressFull: true, once: true}" data-scradar-title="Section 3">
+  <div class="section scradar" data-scradar='{"progressFull": true, "once": true}' data-scradar-title="Section 3">
     Section 3
   </div>
   
@@ -68,6 +68,18 @@
   <!-- Using UMD build -->
   <script src="../dist/scradar.min.js"></script>
   <script>
+    // Configuration file approach (supports both static and dynamic configs)
+    Scradar.configs = {
+      section1: {
+        progressVisible: true,
+        visibleStep: [0.25, 0.5, 0.75]
+      },
+      section2: (element) => ({
+        progressFill: true,
+        peak: [0, 0.5, 1]
+      })
+    };
+    
     const scradar = new Scradar({
       debug: true,
       boundary: 0.5,

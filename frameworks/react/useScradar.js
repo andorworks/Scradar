@@ -17,3 +17,8 @@ export function useScradar(options = {}) {
   
   return scradarRef.current;
 }
+
+// Helper functions for React
+export function setScradarConfigs(configs) {
+  Scradar.configs = { ...Scradar.configs, ...configs };
+}

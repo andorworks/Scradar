@@ -166,7 +166,7 @@ export default class ScradarDebug {
       const ctrl = el.scradar;
       if (!ctrl) return;
       
-      const title = el.dataset.scradarTitle || el.className || el.tagName.toLowerCase();
+      const title = el.dataset.scradarTitle || el.dataset.scradarConfig || el.className || el.tagName.toLowerCase();
       const isIn = +el.dataset.scradarIn;
       
       html += `

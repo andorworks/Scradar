@@ -23,6 +23,11 @@ export default {
     
     // Global property
     app.config.globalProperties.$scradar = Scradar;
+    
+    // Global configs
+    app.config.globalProperties.$scradarConfigs = (configs) => {
+      Scradar.configs = { ...Scradar.configs, ...configs };
+    };
   }
 };
 

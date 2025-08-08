@@ -1,5 +1,5 @@
 import ScradarController from './controller.js';
-import { throttleRaf, eventSpeaker } from './utils.js';
+import { throttleRaf, eventSpeaker, parseElementOptions } from './utils.js';
 import ScradarDebug from './debug.js';
 
 export default class Scradar {
@@ -29,6 +29,9 @@ export default class Scradar {
     eventListen: null,
     debug: false,
   };
+
+  // Global configurations
+  static configs = {};
 
   #elements = [];
   #options;
@@ -89,7 +92,9 @@ export default class Scradar {
 
     // Attach controller to each element
     this.#elements.forEach(el => {
-      el.scradar = new ScradarController(el, this.#options, this.#shadowDom);
+      el.scradar = new ScradarController(el, this.#options, this.#shadowDom, {
+        configs: Scradar.configs
+      });
     });
 
     // Setup observer
