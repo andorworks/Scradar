@@ -9,18 +9,18 @@ export interface ScradarOptions {
 }
 
 export interface ScradarSettings {
-  progressVisible?: boolean | string | string[];
-  progressFill?: boolean | string | string[];
-  progressFull?: boolean | string | string[];
-  progressStart?: boolean | string | string[];
-  progressEnd?: boolean | string | string[];
-  offsetStart?: boolean | string | string[];
-  offsetEnd?: boolean | string | string[];
-  visibleStep?: number[];
+  visibility?: boolean | string | string[];
+  fill?: boolean | string | string[];
+  cover?: boolean | string | string[];
+  enter?: boolean | string | string[];
+  exit?: boolean | string | string[];
+  offsetEnter?: boolean | string | string[];
+  offsetExit?: boolean | string | string[];
+  visibilityStep?: number[];
   fillStep?: number[];
-  fullStep?: number[];
-  startStep?: number[];
-  endStep?: number[];
+  coverStep?: number[];
+  enterStep?: number[];
+  exitStep?: number[];
   peak?: number[] | { start: number; peak: number; end: number };
   once?: boolean;
   trigger?: string;
@@ -35,14 +35,14 @@ export interface ScradarSettings {
 export interface ScradarController {
   el: HTMLElement;
   settings: ScradarSettings;
-  progressVisible: number;
-  progressFill: number;
-  progressFull: number;
-  progressStart: number;
-  progressEnd: number;
-  progressPeak: number;
-  offsetStart: number;
-  offsetEnd: number;
+  visibility: number;
+  fill: number;
+  cover: number;
+  enter: number;
+  exit: number;
+  peak: number;
+  offsetEnter: number;
+  offsetExit: number;
   containerSize: number;
   update(resize?: boolean): void;
   destroy(): void;

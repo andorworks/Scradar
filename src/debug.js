@@ -175,38 +175,38 @@ export default class ScradarDebug {
             #${idx + 1} ${title} ${isIn ? '🐵' : '🙈'}
           </div>
           <div class="scradar-debug-progress">
-            ${ctrl.progressVisible !== undefined ? `
-              <span>visible:</span>
-              <span class="scradar-debug-value">${ctrl.progressVisible.toFixed(3)}</span>
+            ${ctrl.visibility !== undefined ? `
+              <span>visibility:</span>
+              <span class="scradar-debug-value">${ctrl.visibility.toFixed(3)}</span>
             ` : ''}
-            ${ctrl.progressFill !== undefined ? `
+            ${ctrl.fill !== undefined ? `
               <span>fill:</span>
-              <span class="scradar-debug-value">${ctrl.progressFill.toFixed(3)}</span>
+              <span class="scradar-debug-value">${ctrl.fill.toFixed(3)}</span>
             ` : ''}
-            ${ctrl.progressFull !== undefined ? `
-              <span>full:</span>
-              <span class="scradar-debug-value">${ctrl.progressFull.toFixed(3)}</span>
+            ${ctrl.cover !== undefined ? `
+              <span>cover:</span>
+              <span class="scradar-debug-value">${ctrl.cover.toFixed(3)}</span>
             ` : ''}
-            ${ctrl.progressStart !== undefined ? `
-              <span>start:</span>
-              <span class="scradar-debug-value">${ctrl.progressStart.toFixed(3)}</span>
+            ${ctrl.enter !== undefined ? `
+              <span>enter:</span>
+              <span class="scradar-debug-value">${ctrl.enter.toFixed(3)}</span>
             ` : ''}
-            ${ctrl.progressEnd !== undefined ? `
-              <span>end:</span>
-              <span class="scradar-debug-value">${ctrl.progressEnd.toFixed(3)}</span>
+            ${ctrl.exit !== undefined ? `
+              <span>exit:</span>
+              <span class="scradar-debug-value">${ctrl.exit.toFixed(3)}</span>
             ` : ''}
-            ${ctrl.progressPeak !== undefined && ctrl.progressPeak !== 0 ? `
+                        ${ctrl.peak !== undefined && ctrl.peak !== 0 ? `
               <span>peak:</span>
-              <span class="scradar-debug-value">${ctrl.progressPeak.toFixed(3)}</span>
+              <span class="scradar-debug-value">${ctrl.peak.toFixed(3)}</span>
             ` : ''}
-            ${ctrl.currentVisibleStep !== null ? `
+                        ${ctrl.currentVisibilityStep !== null ? `
               <span>step:</span>
-              <span class="scradar-debug-value">${ctrl.currentVisibleStep}</span>
+              <span class="scradar-debug-value">${ctrl.currentVisibilityStep}</span>
             ` : ''}
           </div>
-          ${ctrl.progressVisible !== undefined ? `
+          ${ctrl.visibility !== undefined ? `
             <div class="scradar-debug-progress-bar">
-              <div class="scradar-debug-progress-fill" style="width: ${ctrl.progressVisible * 100}%"></div>
+              <div class="scradar-debug-progress-fill" style="width: ${ctrl.visibility * 100}%"></div>
             </div>
           ` : ''}
         </div>

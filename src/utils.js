@@ -67,7 +67,7 @@ export function parseElementOptions(element, globalConfigs = {}) {
 }
 
 export function updateDataAndCss(targets, settings, type, value) {
-  if (!settings[type] && type !== 'progressPeak') return;
+  if (!settings[type] && type !== 'peak') return;
   
   targets = Array.isArray(targets) ? targets : [targets];
   const prefix = settings.prefix ? settings.prefix + '-' : '';
