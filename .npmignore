@@ -1,0 +1,26 @@
+# Source files (keep only dist)
+src/
+frameworks/
+examples/
+test/
+coverage/
+
+# Config files
+rollup.config.js
+jest.config.js
+.eslintrc.js
+.babelrc
+
+# Development files
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Docs
+*.md
+!README.md

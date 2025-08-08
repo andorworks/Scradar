@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scradar Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    
+    .scradar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      opacity: calc(0.3 + var(--progress-visible, 0) * 0.7);
+      transform: translateY(calc((1 - var(--progress-visible, 0)) * 50px));
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .scradar[data-scradar-in="1"] {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="section">Scroll Down ↓</div>
+  
+  <div class="section scradar" 
+       data-scradar='{"progressVisible": true, "visibleStep": [0.25, 0.5, 0.75]}'
+       data-scradar-title="Section 1">
+    Section 1
+  </div>
+  
+  <div class="section scradar" 
+       data-scradar='{"progressFill": true, "peak": [0, 0.5, 1]}'
+       data-scradar-title="Section 2">
+    Section 2
+  </div>
+  
+  <div class="section scradar" 
+       data-scradar='{"progressFull": true, "once": true}'
+       data-scradar-title="Section 3">
+    Section 3
+  </div>
+  
+  <div class="section">The End</div>
+
+  <!-- Using UMD build -->
+  <script src="../dist/scradar.min.js"></script>
+  <script>
+    const scradar = new Scradar({
+      debug: true,
+      boundary: 0.5,
+      totalProgress: true
+    });
+    
+    // Listen to events
+    document.querySelectorAll('.scradar').forEach(el => {
+      el.addEventListener('scrollEnter', (e) => {
+        console.log('Enter:', el.dataset.scradarTitle, e.detail);
+      });
+      
+      el.addEventListener('stepChange', (e) => {
+        console.log('Step:', el.dataset.scradarTitle, e.detail);
+      });
+    });
+  </script>
+</body>
+</html>
