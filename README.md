@@ -1,4 +1,4 @@
-# Scradar.js
+# Scradar
 
 CSS-first scroll interaction library with progress-based animations.
 
