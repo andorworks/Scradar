@@ -107,7 +107,7 @@ export default class ScradarController {
   }
 
   #parseSteps() {
-    const stepTypes = ['visible', 'fill', 'full', 'start', 'end'];
+    const stepTypes = ['visibility', 'fill', 'cover', 'enter', 'exit'];
     stepTypes.forEach(type => {
       const key = `${type}Step`;
       if (Array.isArray(this.settings[key])) {

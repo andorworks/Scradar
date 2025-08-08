@@ -73,6 +73,11 @@ export function updateDataAndCss(targets, settings, type, value) {
   const prefix = settings.prefix ? settings.prefix + '-' : '';
   const types = settings[type] || ['css'];
   
+  if (!Array.isArray(types)) {
+    console.warn(`Scradar: ${type} setting must be an array, got ${typeof types}`);
+    return;
+  }
+  
   types.forEach(outputType => {
     if (outputType === 'data') {
       const attrName = prefix + type.replace(/([A-Z])/g, '-$1').toLowerCase();

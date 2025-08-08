@@ -1,9 +1,9 @@
 import ScradarController from './controller.js';
-import { throttleRaf, eventSpeaker, parseElementOptions } from './utils.js';
+import { throttleRaf, eventSpeaker } from './utils.js';
 import ScradarDebug from './debug.js';
 
 export default class Scradar {
-  static version = '2.0.0';
+  static version = '1.0.3';
   static defaults = {
     target: '.scradar',
     root: null,
