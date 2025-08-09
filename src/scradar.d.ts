@@ -29,7 +29,6 @@ export interface ScradarSettings {
   receiver?: string;
   delay?: string;
   breakpoint?: Record<number, Partial<ScradarSettings>>;
-  eventListen?: string | string[];
 }
 
 export interface ScradarController {
@@ -74,14 +73,14 @@ declare global {
     'collisionEnter': CustomEvent<ScradarEventDetail>;
     'collisionExit': CustomEvent<ScradarEventDetail>;
     'stepChange': CustomEvent<ScradarEventDetail>;
-    'progressVisibleUpdate': CustomEvent<ScradarEventDetail>;
-    'progressFillUpdate': CustomEvent<ScradarEventDetail>;
-    'progressFullUpdate': CustomEvent<ScradarEventDetail>;
-    'progressStartUpdate': CustomEvent<ScradarEventDetail>;
-    'progressEndUpdate': CustomEvent<ScradarEventDetail>;
-    'progressPeakUpdate': CustomEvent<ScradarEventDetail>;
-    'offsetStartUpdate': CustomEvent<ScradarEventDetail>;
-    'offsetEndUpdate': CustomEvent<ScradarEventDetail>;
+    'visibilityUpdate': CustomEvent<ScradarEventDetail>;
+    'fillUpdate': CustomEvent<ScradarEventDetail>;
+    'coverUpdate': CustomEvent<ScradarEventDetail>;
+    'enterUpdate': CustomEvent<ScradarEventDetail>;
+    'exitUpdate': CustomEvent<ScradarEventDetail>;
+    'peakUpdate': CustomEvent<ScradarEventDetail>;
+    'offsetEnterUpdate': CustomEvent<ScradarEventDetail>;
+    'offsetExitUpdate': CustomEvent<ScradarEventDetail>;
   }
   
   interface WindowEventMap {

@@ -33,6 +33,7 @@
       "require": "./dist/scradar.umd.js",
       "types": "./dist/scradar.d.ts"
     },
+    "./animations.css": "./dist/animations.css",
     "./react": {
       "import": "./frameworks/react/index.js",
       "types": "./frameworks/react/index.d.ts"
@@ -50,8 +51,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "rollup -c && npm run build:types",
+    "build": "rollup -c && npm run build:types && npm run build:css",
     "build:types": "cp src/scradar.d.ts dist/scradar.d.ts",
+    "build:css": "cp src/animations.css dist/animations.css",
     "dev": "rollup -c -w",
     "test": "jest",
     "test:watch": "jest --watch",
