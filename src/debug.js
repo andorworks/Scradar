@@ -2,6 +2,13 @@ export default class ScradarDebug {
   constructor(scradar) {
     this.scradar = scradar;
     this.overlay = null;
+    this.performanceMetrics = {
+      updateCount: 0,
+      lastUpdateTime: 0,
+      avgUpdateTime: 0,
+      maxUpdateTime: 0,
+      elementsCount: 0
+    };
     this.init();
   }
 
@@ -52,6 +59,29 @@ export default class ScradarDebug {
           font-weight: bold;
           font-size: 14px;
           color: #4fc3f7;
+        }
+        .scradar-debug-performance {
+          background: rgba(76, 175, 80, 0.1);
+          border: 1px solid rgba(76, 175, 80, 0.3);
+          padding: 8px;
+          border-radius: 4px;
+          margin-bottom: 10px;
+        }
+        .scradar-debug-warning {
+          background: rgba(255, 193, 7, 0.1);
+          border: 1px solid rgba(255, 193, 7, 0.3);
+          padding: 8px;
+          border-radius: 4px;
+          margin-bottom: 10px;
+          color: #ffc107;
+        }
+        .scradar-debug-error {
+          background: rgba(244, 67, 54, 0.1);
+          border: 1px solid rgba(244, 67, 54, 0.3);
+          padding: 8px;
+          border-radius: 4px;
+          margin-bottom: 10px;
+          color: #f44336;
         }
         #scradar-debug-close {
           cursor: pointer;
@@ -133,12 +163,35 @@ export default class ScradarDebug {
   update() {
     if (!this.overlay) return;
     
+    // Performance tracking
+    const startTime = performance.now();
+    
     const content = this.overlay.querySelector('#scradar-debug-content');
     const scrollProgress = +(document.documentElement.dataset.scradarProgress || 0);
     const scrollDirection = +(document.documentElement.dataset.scradarScroll || 0);
     const boundaryTarget = document.documentElement.dataset.scradarTarget || '-';
     
     let html = '';
+    
+    // Performance metrics
+    this.performanceMetrics.elementsCount = this.scradar.elements.length;
+    const activeElements = this.scradar.elements.filter(el => +el.dataset.scradarIn).length;
+    
+    html += `
+      <div class="scradar-debug-performance">
+        <div class="scradar-debug-label">⚡ Performance</div>
+        <div class="scradar-debug-progress">
+          <span>Elements:</span>
+          <span class="scradar-debug-value">${this.performanceMetrics.elementsCount} (${activeElements} active)</span>
+          <span>Updates:</span>
+          <span class="scradar-debug-value">${this.performanceMetrics.updateCount}</span>
+          <span>Avg Update:</span>
+          <span class="scradar-debug-value">${this.performanceMetrics.avgUpdateTime.toFixed(2)}ms</span>
+          <span>Max Update:</span>
+          <span class="scradar-debug-value">${this.performanceMetrics.maxUpdateTime.toFixed(2)}ms</span>
+        </div>
+      </div>
+    `;
     
     // Global info
     html += `
@@ -215,6 +268,23 @@ export default class ScradarDebug {
     
     html += '</div>';
     content.innerHTML = html;
+    
+    // Update performance metrics
+    const endTime = performance.now();
+    const updateTime = endTime - startTime;
+    
+    this.performanceMetrics.updateCount++;
+    this.performanceMetrics.lastUpdateTime = updateTime;
+    
+    // Calculate running average
+    this.performanceMetrics.avgUpdateTime = 
+      (this.performanceMetrics.avgUpdateTime * (this.performanceMetrics.updateCount - 1) + updateTime) 
+      / this.performanceMetrics.updateCount;
+    
+    // Track maximum update time
+    if (updateTime > this.performanceMetrics.maxUpdateTime) {
+      this.performanceMetrics.maxUpdateTime = updateTime;
+    }
   }
 
   destroy() {

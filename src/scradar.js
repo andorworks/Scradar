@@ -26,7 +26,6 @@ export default class Scradar {
     receiver: null,
     delay: null,
     breakpoint: null,
-    eventListen: null,
     debug: false,
   };
 

@@ -13,7 +13,12 @@ export function parseOptions(str) {
         })
     );
   } catch (e) {
-    console.warn('Scradar: Failed to parse options', str, e);
+    console.error('🎯 Scradar Parse Error:', {
+      input: str,
+      error: e.message,
+      suggestion: 'Check your data-scradar attribute syntax. Use double quotes or proper JSON format.',
+      example: 'data-scradar="{visibility: true, fill: [\'css\', \'data\']}"'
+    });
     return {};
   }
 }
@@ -59,7 +64,13 @@ export function parseElementOptions(element, globalConfigs = {}) {
           })
       );
     } catch (e) {
-      console.warn('Scradar: Failed to parse options', scradarValue, e);
+      console.error('🎯 Scradar Parse Error:', {
+        element: element,
+        input: scradarValue,
+        error: e.message,
+        suggestion: 'Check your data-scradar attribute syntax.',
+        example: 'data-scradar="{visibility: true, fill: true}"'
+      });
     }
   }
   
@@ -74,7 +85,14 @@ export function updateDataAndCss(targets, settings, type, value) {
   const types = settings[type] || ['css'];
   
   if (!Array.isArray(types)) {
-    console.warn(`Scradar: ${type} setting must be an array, got ${typeof types}`);
+    console.error('🎯 Scradar Configuration Error:', {
+      type: type,
+      expected: 'Array',
+      received: typeof types,
+      value: types,
+      suggestion: `Use ${type}: ['css'] or ${type}: ['css', 'data']`,
+      element: targets[0]
+    });
     return;
   }
   

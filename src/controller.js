@@ -58,10 +58,7 @@ export default class ScradarController {
     
     // Parse peak
     this.#parsePeak();
-    
-    // Parse event listeners
-    this.#parseEventListeners();
-    
+  
     // Create trigger if needed
     this.#createTrigger();
     
@@ -121,12 +118,6 @@ export default class ScradarController {
     if (Array.isArray(this.settings.peak) && this.settings.peak.length === 3) {
       const [start, peak, end] = this.settings.peak;
       this.settings.peak = { start, peak, end };
-    }
-  }
-
-  #parseEventListeners() {
-    if (this.settings.eventListen && !Array.isArray(this.settings.eventListen)) {
-      this.settings.eventListen = [this.settings.eventListen];
     }
   }
 
@@ -273,11 +264,11 @@ export default class ScradarController {
   }
 
   #calculateProgress(elStart, elEnd, elSize, containerSize, sizeGap, delayOffset) {
-    // visibility: 0 (before) ~ 1 (after)
-    this.visibility = elEnd / (-containerSize - elSize) + 1;
-    this.visibility = Math.max(0, Math.min(1, this.visibility));
+    // Optimized visibility calculation: 0 (before) ~ 1 (after)
+    const visibilityDenominator = -containerSize - elSize;
+    this.visibility = Math.max(0, Math.min(1, elEnd / visibilityDenominator + 1));
     
-    // fill: -1 (before) ~ 0 (filling) ~ 1 (after)
+    // Optimized fill calculation: -1 (before) ~ 0 (filling) ~ 1 (after)
     if (this.settings.fill) {
       if (elSize > containerSize) {
         if (elStart <= 0 && elStart >= -sizeGap) {
@@ -287,11 +278,11 @@ export default class ScradarController {
         } else {
           this.fill = -elStart / containerSize;
         }
+        this.fill = Math.max(-1, Math.min(1, this.fill));
       } else {
-        // Element is smaller than container
-        this.fill = -elStart / (elSize > containerSize ? containerSize : elSize);
+        // Element is smaller than container - optimized calculation
+        this.fill = Math.max(-1, Math.min(1, -elStart / elSize));
       }
-      this.fill = Math.max(-1, Math.min(1, this.fill));
     }
     
     // cover: 0 (before) ~ 1 (after)
@@ -302,30 +293,36 @@ export default class ScradarController {
       this.cover = 0;
     }
     
-    // enter & exit
-    const contentSize = elSize - delayOffset;
-    this.enter = (elEnd / -containerSize) * (containerSize / contentSize) + 1;
-    this.exit = (elStart + sizeGap) / (containerSize + sizeGap);
+    // Optimized enter & exit calculations
+    if (this.settings.enter || this.settings.exit) {
+      const contentSize = elSize - delayOffset;
+      if (this.settings.enter) {
+        this.enter = (elEnd / -containerSize) * (containerSize / contentSize) + 1;
+      }
+      if (this.settings.exit) {
+        this.exit = (elStart + sizeGap) / (containerSize + sizeGap);
+      }
+    }
     
-    // peak
+    // Optimized peak calculation - only when needed
     if (this.settings.peak && this.settings.peak.peak !== undefined) {
       const { start, peak, end } = this.settings.peak;
       if (this.visibility < start || this.visibility > end) {
         this.peak = 0;
       } else {
-        this.peak = this.visibility <= peak
-          ? (this.visibility - start) / (peak - start)
-          : (end - this.visibility) / (end - peak);
-        this.peak = Math.max(0, Math.min(1, this.peak));
+        const peakRange = this.visibility <= peak ? (peak - start) : (end - peak);
+        const peakDiff = this.visibility <= peak ? (this.visibility - start) : (end - this.visibility);
+        this.peak = Math.max(0, Math.min(1, peakDiff / peakRange));
       }
     }
   }
 
   #updateOutputs() {
-    const receiver = this.settings.receiver
-      ? Array.from(document.querySelectorAll(this.settings.receiver))
-      : [];
-    const targets = [this.el, ...receiver];
+    // Cache receiver elements to avoid repeated DOM queries
+    if (!this._receiverCache && this.settings.receiver) {
+      this._receiverCache = Array.from(document.querySelectorAll(this.settings.receiver));
+    }
+    const targets = this.settings.receiver ? [this.el, ...this._receiverCache] : [this.el];
     
     // Update progress values
     if (this.settings.visibility) {
@@ -378,9 +375,8 @@ export default class ScradarController {
   }
 
   #fireProgressEvent(type, value) {
-    if (this.settings.eventListen && this.settings.eventListen.includes(type)) {
-      eventSpeaker(this.el, `${type}Update`, { value });
-    }
+    // Always fire progress events for consistency with documentation
+    eventSpeaker(this.el, `${type}Update`, { value });
   }
 
   #checkSteps() {
@@ -441,10 +437,10 @@ export default class ScradarController {
       this.wasIn = isIn;
     }
     
-    // Start/End markers
+    // Enter/Exit markers
     if (isIn) {
-      this.el.dataset.scradarStart = elStart <= 0 ? 1 : 0;
-      this.el.dataset.scradarEnd = elEnd >= containerSize ? 1 : 0;
+      this.el.dataset.scradarEnter = elStart <= 0 ? 1 : 0;
+      this.el.dataset.scradarExit = elEnd >= containerSize ? 1 : 0;
       
       // Full In/Out events
       const isFull = elStart <= 0 && elEnd >= containerSize;
@@ -456,7 +452,7 @@ export default class ScradarController {
           });
         } else {
           eventSpeaker(this.el, 'fullOut', {
-            from: +this.el.dataset.scradarStart ? 'bottom' : 'top',
+            from: +this.el.dataset.scradarEnter ? 'bottom' : 'top',
             isInitial: !this.init
           });
         }
@@ -464,8 +460,8 @@ export default class ScradarController {
         this.isFull = isFull;
       }
     } else {
-      this.el.dataset.scradarStart = 0;
-      this.el.dataset.scradarEnd = 0;
+      this.el.dataset.scradarEnter = 0;
+      this.el.dataset.scradarExit = 0;
     }
   }
 
