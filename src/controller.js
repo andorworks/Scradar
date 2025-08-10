@@ -305,14 +305,28 @@ export default class ScradarController {
     }
     
     // Optimized peak calculation - only when needed
-    if (this.settings.peak && this.settings.peak.peak !== undefined) {
-      const { start, peak, end } = this.settings.peak;
-      if (this.visibility < start || this.visibility > end) {
-        this.peak = 0;
-      } else {
-        const peakRange = this.visibility <= peak ? (peak - start) : (end - peak);
-        const peakDiff = this.visibility <= peak ? (this.visibility - start) : (end - this.visibility);
-        this.peak = Math.max(0, Math.min(1, peakDiff / peakRange));
+    if (this.settings.peak) {
+      let peakConfig;
+      
+      // Handle both array and object formats
+      if (Array.isArray(this.settings.peak)) {
+        // Array format: [start, peak, end]
+        const [start, peak, end] = this.settings.peak;
+        peakConfig = { start, peak, end };
+      } else if (this.settings.peak.peak !== undefined) {
+        // Object format: { start, peak, end }
+        peakConfig = this.settings.peak;
+      }
+      
+      if (peakConfig) {
+        const { start, peak, end } = peakConfig;
+        if (this.visibility < start || this.visibility > end) {
+          this.peak = 0;
+        } else {
+          const peakRange = this.visibility <= peak ? (peak - start) : (end - peak);
+          const peakDiff = this.visibility <= peak ? (this.visibility - start) : (end - this.visibility);
+          this.peak = Math.max(0, Math.min(1, peakDiff / peakRange));
+        }
       }
     }
   }
