@@ -121,6 +121,8 @@ export default class Scradar {
     // Debug overlay
     if (this.#options.debug) {
       this.#debugger = new ScradarDebug(this);
+      // Expose debug instance globally for target toggle functionality
+      window.scradarDebug = this.#debugger;
     }
 
     // Initial calculation

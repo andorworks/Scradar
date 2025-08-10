@@ -147,23 +147,23 @@
     <div class="scradar scradar__stagger--fade-in" data-scradar="{visibility: true}">
       <h2>Staggered Animation</h2>
       <div class="cards-container">
-        <div class="card">Card 1</div>
-        <div class="card">Card 2</div>
-        <div class="card">Card 3</div>
-        <div class="card">Card 4</div>
+        <div class="card scradar__stagger-item">Card 1</div>
+        <div class="card scradar__stagger-item">Card 2</div>
+        <div class="card scradar__stagger-item">Card 3</div>
+        <div class="card scradar__stagger-item">Card 4</div>
       </div>
     </div>
   </section>
 
   <!-- Progress Bar Section -->
-  <section class="section progress-section">
+  <section class="section progress-section scradar" data-scradar="{fill: true}">
     <div class="progress-container">
       <h2>Fill-based Animations</h2>
-      <div class="card scradar scradar__progress-bar" data-scradar="{fill: true}" style="margin: 2rem auto;">
+      <div class="card scradar__progress-bar" style="margin: 2rem auto;">
         <h3>Progress Bar</h3>
         <p>This fills up as you scroll through this section</p>
       </div>
-      <div class="card scradar scradar__slide-reveal" data-scradar="{fill: true}" style="margin: 2rem auto;">
+      <div class="card scradar__slide-reveal" style="margin: 2rem auto;">
         <h3>Slide Reveal</h3>
         <p>Content reveals with clip-path animation</p>
       </div>
@@ -171,17 +171,17 @@
   </section>
 
   <!-- Peak Animations -->
-  <section class="section">
+  <section class="section" style="background: #2c3e50;">
     <div class="cards-container">
-      <div class="card scradar scradar__bounce" data-scradar="{visibility: true, peak: [0, 0.5, 1]}">
+      <div class="card scradar scradar__bounce" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
         <h3>Bounce Effect</h3>
         <p>Rises and falls with peak animation</p>
       </div>
-      <div class="card scradar scradar__pulse" data-scradar="{visibility: true, peak: [0, 0.5, 1]}">
+      <div class="card scradar scradar__pulse" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
         <h3>Pulse Effect</h3>
         <p>Pulses at the peak of visibility</p>
       </div>
-      <div class="card scradar scradar__glow" data-scradar="{visibility: true, peak: [0, 0.5, 1]}">
+      <div class="card scradar scradar__glow" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
         <h3>Glow Effect</h3>
         <p>Glows brighter at peak visibility</p>
       </div>

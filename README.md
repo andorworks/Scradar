@@ -492,11 +492,11 @@ Simply add CSS classes to your HTML elements:
 - `.scradar__slide-reveal` - Slide reveal with clip-path
 
 #### Text Effects
-- `.scradar__text-reveal` - Text reveal with gradient
+- `.scradar__text-reveal` - Text reveal with blend mode effect
 - `.scradar__typewriter` - Typewriter text effect
 
 #### Advanced Effects
-- `.scradar__stagger--fade-in` - Staggered child animations
+- `.scradar__stagger--fade-in` - Staggered animations for `.scradar__stagger-item` elements (children appear sequentially with delays)
 - `.scradar__rotate` - Full rotation
 - `.scradar__tilt` - Subtle tilt effect
 - `.scradar__color-shift` - Color hue rotation
@@ -560,9 +560,9 @@ Modify animation behavior with utility classes:
 
   <!-- Cards with stagger effect -->
   <div class="scradar scradar__stagger--fade-in" data-scradar="{visibility: true}">
-    <div class="card">Card 1</div>
-    <div class="card">Card 2</div>
-    <div class="card">Card 3</div>
+    <div class="card scradar__stagger-item">Card 1</div>
+    <div class="card scradar__stagger-item">Card 2</div>
+    <div class="card scradar__stagger-item">Card 3</div>
   </div>
 
   <!-- Progress section -->
