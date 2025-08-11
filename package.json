@@ -1,6 +1,6 @@
 {
   "name": "scradar",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "description": "CSS-first scroll interaction library with progress-based animations",
   "author": "andor works <hello@andor.works>",
