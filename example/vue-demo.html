@@ -247,8 +247,10 @@
   
   <!-- Scradar -->
   <script src="../dist/scradar.min.js"></script>
+  <script src="../dist/vue.esm.js" type="module"></script>
   
-  <script>
+  <script type="module">
+    import { default as ScradarVue } from '../dist/vue.esm.js';
     const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
 
     // Mock Scradar Vue composables for demo purposes
@@ -279,11 +281,15 @@
 
     // Hero Section Component
     const HeroSection = {
+      setup() {
+        const config = ref({ visibility: true });
+        return { config };
+      },
       template: `
         <section class="section hero">
           <div 
             class="scradar scradar__fade-in--up scradar__slow" 
-            :data-scradar="JSON.stringify({ visibility: true })"
+            v-scradar="config"
             style="--fade-distance: 80px"
           >
             <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">🎯 Scradar Vue Demo</h1>
@@ -337,10 +343,10 @@
       },
       template: `
         <section class="section" style="background: #35495e; color: white;">
-          <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+          <h2 class="scradar scradar__fade-in" data-scradar="{ visibility: true }">
             Reactive Configuration
           </h2>
-          <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+          <p class="scradar scradar__fade-in" data-scradar="{ visibility: true }">
             Dynamic configuration updates with Vue reactivity
           </p>
           
@@ -367,7 +373,7 @@
             <div 
               class="card scradar scradar__fade-in" 
               :class="'scradar__' + animationType"
-              :data-scradar="JSON.stringify(scradarConfig)"
+              v-scradar="scradarConfig"
               style="background: rgba(255,255,255,0.1); color: white;"
             >
               <h3>Reactive Element</h3>
@@ -595,9 +601,13 @@
 
     // Final Section Component
     const FinalSection = {
+      setup() {
+        const config = ref({ visibility: true });
+        return { config };
+      },
       template: `
-        <section class="section hero">
-          <div class="scradar scradar__rotate scradar__slow" :data-scradar="JSON.stringify({ visibility: true })">
+        <section class="section hero scradar" v-scradar="config">
+          <div class="scradar__rotate scradar__slow">
             <h2>🎯 Scradar Vue</h2>
             <p>Enhanced Vue integration with reactive patterns</p>
             <div class="demo-controls">
@@ -673,6 +683,7 @@
 
     // Create and mount the Vue app
     const app = createApp(App);
+    app.use(ScradarVue);
     app.mount('#app');
   </script>
 </body>
