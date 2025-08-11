@@ -54,24 +54,51 @@ npm install scradar
 ```
 
 ### React
-```js
-import { useScradar, setScradarConfigs } from 'scradar/react';
+```jsx
+import { useScradar, useScradarElement, useScradarConfigs } from 'scradar/react';
 
-// Global configurations (supports both static and dynamic)
-setScradarConfigs({
-  section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] },
-  section2: (element) => ({
-    visibility: true,
-    once: element.classList.contains('once-only')
-  })
-});
-
+// Global configurations with React hooks
 function App() {
   const scradar = useScradar({ debug: true });
+  
+  // Global configs with reactive updates
+  useScradarConfigs({
+    section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] },
+    section2: (element) => ({
+      visibility: true,
+      once: element.classList.contains('once-only')
+    })
+  });
   
   return (
     <div className="scradar" data-scradar-config="section1">
       Content
+    </div>
+  );
+}
+
+// Individual element with reactive config
+function AnimatedComponent({ isVisible }) {
+  const scradarRef = useScradarElement({
+    visibility: true,
+    peak: isVisible ? [0, 0.5, 1] : null
+  }, [isVisible]);
+  
+  return (
+    <div ref={scradarRef} className="scradar scradar__fade-in">
+      Dynamic content
+    </div>
+  );
+}
+
+// SPA routing support - automatically handles route changes
+function PageComponent() {
+  const scradar = useScradar();
+  
+  // Scradar automatically updates when route changes
+  return (
+    <div className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+      Page content
     </div>
   );
 }
@@ -80,17 +107,25 @@ function App() {
 ### Vue
 ```html
 <template>
-  <div v-scradar="{ visibility: true }">
+  <!-- Directive usage -->
+  <div v-scradar="{ visibility: true }" class="scradar scradar__fade-in">
     Content
+  </div>
+  
+  <!-- Reactive configuration -->
+  <div v-scradar="scradarConfig" class="scradar scradar__fade-in">
+    Dynamic content
   </div>
 </template>
 
 <script>
+import { createApp } from 'vue';
 import ScradarVue from 'scradar/vue';
 
-app.use(ScradarVue);
+const app = createApp(App);
+app.use(ScradarVue, { debug: true });
 
-// Global configurations (supports both static and dynamic)
+// Global configurations
 app.config.globalProperties.$scradarConfigs({
   section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] },
   section2: (element) => ({
@@ -98,6 +133,61 @@ app.config.globalProperties.$scradarConfigs({
     once: element.classList.contains('once-only')
   })
 });
+</script>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { useScradar, useScradarConfigs } from 'scradar/vue';
+
+// Composition API usage
+const { instance, update, destroy } = useScradar({ debug: true });
+
+// Reactive global configs
+useScradarConfigs({
+  section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] }
+});
+
+// Reactive element configuration
+const isVisible = ref(true);
+const scradarConfig = computed(() => ({
+  visibility: true,
+  peak: isVisible.value ? [0, 0.5, 1] : null
+}));
+
+// Manual update when needed
+const handleRouteChange = () => {
+  update();
+};
+</script>
+```
+
+### Vue 2
+```html
+<template>
+  <div v-scradar="{ visibility: true }" class="scradar scradar__fade-in">
+    Content
+  </div>
+</template>
+
+<script>
+import Vue from 'vue';
+import { ScradarVue2 } from 'scradar/vue';
+
+Vue.use(ScradarVue2, { debug: true });
+
+export default {
+  mounted() {
+    // Global configurations
+    this.$scradarConfigs({
+      section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] }
+    });
+  },
+  
+  beforeDestroy() {
+    // Cleanup
+    this.$scradarCleanup();
+  }
+};
 </script>
 ```
 
@@ -143,13 +233,14 @@ Scradar.configs = {
 ```
 
 ### Progress Types
-| Option       | Description                      | Range                                 | CSS Variable        |
-| ------------ | -------------------------------- | ------------------------------------- | ------------------- |
-| `visibility` | Element visibility progress      | 0 (before) ~ 1 (after)                | `--visibility`      |
-| `fill`       | Fill progress for large elements | -1 (before) ~ 0 (filling) ~ 1 (after) | `--fill`            |
-| `cover`      | Full coverage progress           | 0 (not full) ~ 1 (full)               | `--cover`           |
-| `enter`      | Start edge progress              | 0 ~ 1                                 | `--enter`           |
-| `exit`       | End edge progress                | 0 ~ 1                                 | `--exit`            |
+| Option       | Description                      | Range                                 | CSS Variable        | Priority |
+| ------------ | -------------------------------- | ------------------------------------- | ------------------- | -------- |
+| `peak`       | Peak animation progress          | 0 ~ 1 (rise and fall)                 | `--peak`            | 1st      |
+| `visibility` | Element visibility progress      | 0 (before) ~ 1 (after)                | `--visibility`      | 2nd      |
+| `fill`       | Fill progress for large elements | -1 (before) ~ 0 (filling) ~ 1 (after) | `--fill`            | 3rd      |
+| `cover`      | Full coverage progress           | 0 (not full) ~ 1 (full)               | `--cover`           | 4th      |
+| `enter`      | Start edge progress              | 0 ~ 1                                 | `--enter`           | 5th      |
+| `exit`       | End edge progress                | 0 ~ 1                                 | `--exit`            | 6th      |
 
 ### Offset Options
 | Option        | Type    | Default | Description                       | CSS Variable     |
@@ -212,38 +303,55 @@ Scradar automatically provides these attributes to all tracked elements:
 
 ## 🎨 CSS Usage
 
+### Progress Priority System
+Scradar automatically selects the most appropriate progress value based on priority:
+1. **`--peak`** (highest priority) - Rise and fall animations
+2. **`--visibility`** - Element visibility progress
+3. **`--fill`** - Fill progress for large elements
+4. **`--cover`** - Full coverage progress
+5. **`--enter`** - Start edge progress
+6. **`--exit`** (lowest priority) - End edge progress
+
+The selected progress is available as `--progress` CSS variable.
+
 ### Direct Progress Usage
 ```css
 .element {
-  /* Basic usage */
-  opacity: var(--visibility);
-  transform: translateY(calc((1 - var(--visibility)) * 100px));
+  /* Use automatic priority selection */
+  opacity: var(--progress);
+  transform: translateY(calc((1 - var(--progress)) * 100px));
   
-  /* With calculations */
+  /* Use specific progress types */
+  opacity: var(--visibility);
   scale: calc(0.5 + var(--fill) * 0.5);
   
   /* With clamp for safety */
-  opacity: clamp(0.2, var(--visibility), 0.8);
+  opacity: clamp(0.2, var(--progress), 0.8);
   
   /* Using CSS default values */
-  left: calc(var(--visibility, 0) * 100px);
+  left: calc(var(--progress, 0) * 100px);
 }
 ```
 
 ### Advanced CSS Techniques
 ```css
 /* Sequential animations with delay and duration */
-.item1 { opacity: calc(var(--cover) / 0.2); }
-.item2 { opacity: calc((var(--cover) - 0.2) / 0.2); }
-.item3 { opacity: calc((var(--cover) - 0.4) / 0.2); }
-.item4 { opacity: calc((var(--cover) - 0.6) / 0.2); }
-.item5 { opacity: calc((var(--cover) - 0.8) / 0.2); }
+.item1 { opacity: calc(var(--progress) / 0.2); }
+.item2 { opacity: calc((var(--progress) - 0.2) / 0.2); }
+.item3 { opacity: calc((var(--progress) - 0.4) / 0.2); }
+.item4 { opacity: calc((var(--progress) - 0.6) / 0.2); }
+.item5 { opacity: calc((var(--progress) - 0.8) / 0.2); }
 
 /* Scale with clamp to prevent negative values */
-.item1 { transform: scale(clamp(1, var(--cover) / 0.2 * 5, 5)); }
-.item2 { transform: scale(clamp(1, (var(--cover) - 0.2) / 0.2 * 5, 5)); }
+.item1 { transform: scale(clamp(1, var(--progress) / 0.2 * 5, 5)); }
+.item2 { transform: scale(clamp(1, (var(--progress) - 0.2) / 0.2 * 5, 5)); }
 
 /* Formula: clamp(min, (progress - delay) / duration * max, max) */
+
+/* Force specific progress type usage */
+.scradar__use-fill { --progress: var(--progress-fill); }
+.scradar__use-peak { --progress: var(--progress-peak); }
+.scradar__use-visibility { --progress: var(--progress-visibility); }
 ```
 
 ### Keyframe Animation Control
@@ -255,7 +363,7 @@ Scradar automatically provides these attributes to all tracked elements:
 
 .element {
   animation: slide 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards paused;
-  animation-delay: calc(var(--visibility) * -1s);
+  animation-delay: calc(var(--progress) * -1s);
 }
 
 /* Complex keyframe example */
@@ -268,7 +376,7 @@ Scradar automatically provides these attributes to all tracked elements:
 
 .element {
   animation: complex 1s forwards paused;
-  animation-delay: calc(var(--cover) * -1s);
+  animation-delay: calc(var(--progress) * -1s);
 }
 ```
 
@@ -341,6 +449,22 @@ window.addEventListener('momentum', (e) => {
 ```
 
 ## 🔧 Advanced Features
+
+## 🚀 Framework-Specific Optimizations
+
+### React Optimizations
+- **Global Instance Management**: Single Scradar instance shared across all components
+- **SPA Routing Support**: Automatic updates on route changes (React Router, Next.js, etc.)
+- **Performance Optimization**: Memoized options and efficient re-renders
+- **Memory Leak Prevention**: Automatic cleanup when components unmount
+- **Reactive Configurations**: Dynamic config updates with React hooks
+
+### Vue Optimizations
+- **Global Instance Management**: Single Scradar instance for the entire app
+- **Reactive Directives**: Automatic updates when binding values change
+- **Composition API Support**: Modern Vue 3 patterns with `useScradar` composables
+- **Options API Support**: Traditional Vue 2/3 patterns with global properties
+- **Memory Management**: Automatic cleanup with component lifecycle
 
 ### Steps
 Define progress breakpoints for staged animations:
@@ -454,7 +578,7 @@ Simply add CSS classes to your HTML elements:
 </div>
 
 <!-- Scale animation with custom distance -->
-<div class="scradar scradar__scale-in" data-scradar="{visibility: true}" style="--scradar-fade-distance: 50px;">
+<div class="scradar scradar__scale-in" data-scradar="{visibility: true}" style="--fade-distance: 50px;">
   Custom animation distance
 </div>
 
@@ -503,9 +627,19 @@ Simply add CSS classes to your HTML elements:
 - `.scradar__blur-in` - Blur to clear effect
 
 #### Peak-based Effects (rise and fall)
-- `.scradar__bounce` - Bounce effect
-- `.scradar__pulse` - Pulse effect
-- `.scradar__glow` - Glow effect
+- `.scradar__bounce` - Bounce effect (uses peak progress)
+- `.scradar__pulse` - Pulse effect (uses peak progress)
+- `.scradar__glow` - Glow effect (uses peak progress)
+
+#### Trigger-based Effects (one-time animations)
+- `.scradar__trigger-fade-in` - Trigger fade in animation
+- `.scradar__trigger-fade-in--up` - Trigger fade in from bottom
+- `.scradar__trigger-scale-in` - Trigger scale in animation
+- `.scradar__trigger-bounce` - Trigger bounce animation
+- `.scradar__trigger-pulse` - Trigger pulse animation
+- `.scradar__trigger-glow` - Trigger glow animation
+
+*Trigger animations activate when `data-scradar-in="1"` is set on the element or its parent.*
 
 #### Combination Effects
 - `.scradar__zoom-fade` - Zoom and fade combined
@@ -517,11 +651,11 @@ Override default values using CSS variables:
 
 ```css
 .my-custom-animation {
-  --scradar-fade-distance: 60px;         /* Default: 30px */
-  --scradar-transition-duration: 1.2s;   /* Default: 0.6s */
-  --scradar-transition-easing: ease-out; /* Default: ease */
-  --scradar-scale-start: 0.5;            /* Default: 0.8 */
-  --scradar-parallax-medium: -80px;      /* Default: -50px */
+  --fade-distance: 60px;         /* Default: 30px */
+  --transition-duration: 1.2s;   /* Default: 0.6s */
+  --transition-easing: ease-out; /* Default: ease */
+  --scale-start: 0.5;            /* Default: 0.8 */
+  --parallax-medium: -80px;      /* Default: -50px */
 }
 ```
 
@@ -539,6 +673,11 @@ Modify animation behavior with utility classes:
 
 <!-- Distance modifiers -->
 <div class="scradar scradar__fade-in--up scradar__large-distance">Large movement</div>
+
+<!-- Progress type modifiers -->
+<div class="scradar scradar__fade-in scradar__use-fill">Force fill progress</div>
+<div class="scradar scradar__fade-in scradar__use-peak">Force peak progress</div>
+<div class="scradar scradar__fade-in scradar__use-visibility">Force visibility progress</div>
 ```
 
 ### Complete Example
@@ -554,7 +693,7 @@ Modify animation behavior with utility classes:
   <!-- Hero section with custom timing -->
   <section class="scradar scradar__fade-in--up scradar__slow" 
            data-scradar="{visibility: true}"
-           style="--scradar-fade-distance: 80px;">
+           style="--fade-distance: 80px;">
     <h1>Hero Title</h1>
   </section>
 
@@ -570,6 +709,16 @@ Modify animation behavior with utility classes:
     Progress content
   </div>
 
+  <!-- Peak animation section -->
+  <div class="scradar scradar__bounce" data-scradar="{visibility: true, peak: [0, 0.5, 1]}">
+    Bounce effect with peak progress
+  </div>
+
+  <!-- Trigger animation section -->
+  <div class="scradar__trigger-fade-in" data-scradar-in="1">
+    Triggered fade in animation
+  </div>
+
   <script src="https://unpkg.com/scradar"></script>
   <script>
     new Scradar();
@@ -579,6 +728,137 @@ Modify animation behavior with utility classes:
 ```
 
 ## 📚 API
+
+## 🎯 Framework-Specific Usage Examples
+
+### React Examples
+
+#### Basic Usage with Hooks
+```jsx
+import { useScradar, useScradarElement } from 'scradar/react';
+
+function MyComponent() {
+  const scradar = useScradar({ debug: true });
+  const elementRef = useScradarElement({ visibility: true });
+  
+  return (
+    <div ref={elementRef} className="scradar scradar__fade-in">
+      Animated content
+    </div>
+  );
+}
+```
+
+#### Dynamic Configuration
+```jsx
+function DynamicComponent({ shouldAnimate, animationType }) {
+  const config = useMemo(() => ({
+    visibility: true,
+    peak: shouldAnimate ? [0, 0.5, 1] : null,
+    [animationType]: true
+  }), [shouldAnimate, animationType]);
+  
+  const elementRef = useScradarElement(config, [shouldAnimate, animationType]);
+  
+  return (
+    <div ref={elementRef} className="scradar scradar__fade-in">
+      Dynamic animation
+    </div>
+  );
+}
+```
+
+#### SPA Routing with Next.js
+```jsx
+// pages/_app.js
+import { useScradar } from 'scradar/react';
+
+function MyApp({ Component, pageProps }) {
+  const scradar = useScradar({ debug: true });
+  
+  return <Component {...pageProps} />;
+}
+
+// pages/about.js
+export default function About() {
+  return (
+    <div className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+      About page content
+    </div>
+  );
+}
+```
+
+### Vue Examples
+
+#### Composition API (Vue 3)
+```vue
+<template>
+  <div v-scradar="scradarConfig" class="scradar scradar__fade-in">
+    {{ message }}
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { useScradar } from 'scradar/vue';
+
+const { instance } = useScradar({ debug: true });
+
+const isVisible = ref(false);
+const message = ref('Hello Vue!');
+
+const scradarConfig = computed(() => ({
+  visibility: true,
+  peak: isVisible.value ? [0, 0.5, 1] : null
+}));
+
+// Toggle animation
+const toggleAnimation = () => {
+  isVisible.value = !isVisible.value;
+};
+</script>
+```
+
+#### Options API (Vue 2/3)
+```vue
+<template>
+  <div v-scradar="{ visibility: true, peak: [0, 0.5, 1] }" class="scradar scradar__fade-in">
+    Options API content
+  </div>
+</template>
+
+<script>
+export default {
+  mounted() {
+    this.$scradarConfigs({
+      hero: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] }
+    });
+  },
+  
+  beforeDestroy() {
+    this.$scradarCleanup();
+  }
+};
+</script>
+```
+
+#### Nuxt.js Integration
+```js
+// plugins/scradar.js
+import ScradarVue from 'scradar/vue';
+
+export default ({ app }) => {
+  app.use(ScradarVue, { debug: process.env.NODE_ENV === 'development' });
+};
+
+// pages/index.vue
+<template>
+  <div class="scradar scradar__fade-in" data-scradar="{visibility: true}">
+    Nuxt.js page
+  </div>
+</template>
+```
 
 ### Constructor
 ```js

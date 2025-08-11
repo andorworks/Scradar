@@ -205,4 +205,63 @@ describe('Scradar', () => {
     expect(typeof el.scradar.containerSize).toBe('number');
     expect(el.scradar.containerSize).toBeGreaterThan(0);
   });
+
+  test('should calculate peak progress correctly', () => {
+    scradar = new Scradar();
+    const el = document.querySelectorAll('.scradar')[1]; // Second element has peak config
+    
+    expect(el.scradar.settings.peak).toEqual([0, 0.5, 1]);
+    
+    // Test peak calculation at different visibility values
+    el.scradar.visibility = 0; // Before peak range
+    el.scradar.update();
+    expect(el.scradar.peak).toBe(0);
+    
+    el.scradar.visibility = 0.25; // Halfway to peak
+    el.scradar.update();
+    expect(el.scradar.peak).toBe(0.5);
+    
+    el.scradar.visibility = 0.5; // At peak
+    el.scradar.update();
+    expect(el.scradar.peak).toBe(1);
+    
+    el.scradar.visibility = 0.75; // Halfway from peak
+    el.scradar.update();
+    expect(el.scradar.peak).toBe(0.5);
+    
+    el.scradar.visibility = 1; // After peak range
+    el.scradar.update();
+    expect(el.scradar.peak).toBe(0);
+  });
+
+  test('should handle peak progress CSS variable output', () => {
+    scradar = new Scradar();
+    const el = document.querySelectorAll('.scradar')[1]; // Second element has peak config
+    
+    // Set peak value
+    el.scradar.visibility = 0.5;
+    el.scradar.update();
+    
+    // Check if peak CSS variable is set
+    expect(el.style.getPropertyValue('--peak')).toBeDefined();
+    expect(parseFloat(el.style.getPropertyValue('--peak'))).toBe(1);
+  });
+
+  test('should handle progress priority system', () => {
+    scradar = new Scradar();
+    const el = document.querySelectorAll('.scradar')[1]; // Second element has peak config
+    
+    // Test that peak takes priority over fill
+    el.scradar.visibility = 0.5;
+    el.scradar.fill = 0.3;
+    el.scradar.update();
+    
+    // Peak should be used as primary progress
+    expect(el.scradar.peak).toBe(1);
+    expect(el.scradar.fill).toBe(0.3);
+    
+    // Check that --scradar-progress would use peak value
+    // (This is tested in CSS, but we can verify the peak value is calculated correctly)
+    expect(el.scradar.peak).toBeGreaterThan(el.scradar.fill);
+  });
 });

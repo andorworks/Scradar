@@ -171,19 +171,57 @@
   </section>
 
   <!-- Peak Animations -->
-  <section class="section" style="background: #2c3e50;">
+  <section class="section scradar" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: #2c3e50;">
     <div class="cards-container">
-      <div class="card scradar scradar__bounce" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
+      <div class="card scradar__bounce" style="background: rgba(255,255,255,0.9); color: #333;">
         <h3>Bounce Effect</h3>
-        <p>Rises and falls with peak animation</p>
+        <p>Uses peak progress (highest priority)</p>
       </div>
-      <div class="card scradar scradar__pulse" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
+      <div class="card scradar__pulse" style="background: rgba(255,255,255,0.9); color: #333;">
         <h3>Pulse Effect</h3>
-        <p>Pulses at the peak of visibility</p>
+        <p>Uses peak progress with smooth transitions</p>
       </div>
-      <div class="card scradar scradar__glow" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
+      <div class="card scradar__glow" style="background: rgba(255,255,255,0.9); color: #333;">
         <h3>Glow Effect</h3>
-        <p>Glows brighter at peak visibility</p>
+        <p>Uses peak progress with smooth transitions</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progress Priority Examples -->
+  <section class="section" style="background: #34495e;">
+    <h2>Progress Priority Examples</h2>
+    <div class="cards-container">
+      <div class="card scradar scradar__fade-in" data-scradar="{visibility: true}" style="background: rgba(255,255,255,0.9); color: #333;">
+        <h3>Default (Visibility)</h3>
+        <p>Uses visibility progress by default</p>
+      </div>
+      <div class="card scradar scradar__fade-in" data-scradar="{fill: true}" style="background: rgba(255,255,255,0.9); color: #333;">
+        <h3>Fill Priority</h3>
+        <p>Uses fill progress (no peak, so fill is used)</p>
+      </div>
+      <div class="card scradar scradar__fade-in" data-scradar="{visibility: true, peak: [0, 0.5, 1]}" style="background: rgba(255,255,255,0.9); color: #333;">
+        <h3>Peak Priority</h3>
+        <p>Uses peak progress (highest priority)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trigger-based Animations -->
+  <section class="section" style="background: #2c3e50;">
+    <h2>Trigger-based Animations</h2>
+    <div class="cards-container">
+      <div class="card scradar scradar__trigger-fade-in" style="background: rgba(255,255,255,0.9); color: #333; opacity: 0;">
+        <h3>Trigger Fade In</h3>
+        <p>Triggers when data-scradar-in="1" is set</p>
+      </div>
+      <div class="card scradar scradar__trigger-scale-in" style="background: rgba(255,255,255,0.9); color: #333; opacity: 0; transform: scale(0.8);">
+        <h3>Trigger Scale In</h3>
+        <p>Triggers with scale animation</p>
+      </div>
+      <div class="card scradar scradar__trigger-bounce" style="background: rgba(255,255,255,0.9); color: #333;">
+        <h3>Trigger Bounce</h3>
+        <p>Triggers with bounce animation</p>
       </div>
     </div>
   </section>
@@ -213,6 +251,21 @@
     const scradar = new Scradar({ debug: true });
     
     console.log('Scradar initialized with', scradar.elements.length, 'elements');
+    
+    // Trigger button functionality
+    document.getElementById('triggerBtn').addEventListener('click', function() {
+      const triggerElements = document.querySelectorAll('[class*="scradar__trigger"]');
+      triggerElements.forEach(el => {
+        el.setAttribute('data-scradar-in', '1');
+      });
+      
+      // Reset after animation completes
+      setTimeout(() => {
+        triggerElements.forEach(el => {
+          el.removeAttribute('data-scradar-in');
+        });
+      }, 2000);
+    });
   </script>
 </body>
 </html>
