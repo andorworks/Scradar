@@ -49,7 +49,13 @@ export function parseElementOptions(element, globalConfigs = {}) {
     }
   }
   
-  // 2. Inline JSON check
+  // 2. Direct object check (for Vue reactive objects)
+  if (scradarValue && typeof scradarValue === 'object') {
+    // Handle Vue reactive objects
+    return scradarValue;
+  }
+  
+  // 3. Inline JSON check
   if (scradarValue) {
     try {
       return JSON.parse(

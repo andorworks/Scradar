@@ -18,6 +18,15 @@
   --transition-easing: ease;
 }
 
+/* Base scradar element properties for layout stability */
+.scradar {
+  /* Ensure stable layout during animations */
+  contain: layout style paint;
+  /* Prevent layout shifts from transforms */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
 /* Progress type variables - defined on scradar elements */
 .scradar {
   /* Priority order: peak > visibility > fill > cover > enter > exit */
@@ -190,10 +199,24 @@
 
 .scradar__rotate {
   transform: rotate(calc(var(--progress) * var(--rotate-amount)));
+  /* Ensure rotation doesn't affect layout calculations */
+  transform-origin: center center;
+  /* Preserve original dimensions during rotation */
+  width: fit-content;
+  height: fit-content;
+  /* Prevent layout shifts */
+  contain: layout style paint;
 }
 
 .scradar__tilt {
   transform: rotate(calc(var(--progress) * var(--tilt-amount) - var(--tilt-amount) / 2));
+  /* Ensure rotation doesn't affect layout calculations */
+  transform-origin: center center;
+  /* Preserve original dimensions during rotation */
+  width: fit-content;
+  height: fit-content;
+  /* Prevent layout shifts */
+  contain: layout style paint;
 }
 
 /* =============================================================================

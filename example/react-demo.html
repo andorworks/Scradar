@@ -584,8 +584,8 @@ function MyApp({ Component, pageProps }) {
       const elementRef = useScradarElement({ visibility: true });
       
       return (
-        <section className="section hero">
-          <div ref={elementRef} className="scradar scradar__rotate scradar__slow">
+        <section ref={elementRef} className="section hero scradar">
+          <div className="scradar__rotate scradar__slow">
             <h2>🎯 Scradar React</h2>
             <p>Enhanced React integration with modern patterns</p>
             <div className="demo-controls">
