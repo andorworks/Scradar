@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scradar React Demo</title>
+  <link rel="stylesheet" href="../dist/animations.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .section {
+      min-height: 100vh;
+      padding: 4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 2rem 0;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h3 {
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .card p {
+      color: #7f8c8d;
+      margin-bottom: 1rem;
+    }
+
+    .progress-section {
+      background: #ecf0f1;
+    }
+
+    .progress-container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #bdc3c7;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar::after {
+      background: #3498db;
+      border-radius: 4px;
+    }
+
+    .button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+      margin: 0.5rem;
+    }
+
+    .button:hover {
+      background: #2980b9;
+    }
+
+    .button.secondary {
+      background: #95a5a6;
+    }
+
+    .button.secondary:hover {
+      background: #7f8c8d;
+    }
+
+    .demo-controls {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    .demo-controls h4 {
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .control-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .code-block {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 1rem;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .feature-item h4 {
+      color: #3498db;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item p {
+      color: #bdc3c7;
+      font-size: 0.9rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin: 0 1rem;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #3498db;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .react-version {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(97, 218, 251, 0.9);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Scradar -->
+  <script src="../dist/scradar.min.js"></script>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    // Mock Scradar React hooks for demo purposes
+    // In real usage, these would be imported from 'scradar/react'
+    const useScradar = (options = {}) => {
+      const [instance, setInstance] = useState(null);
+      
+      useEffect(() => {
+        const scradar = new Scradar(options);
+        setInstance(scradar);
+        
+        return () => {
+          scradar.destroy();
+        };
+      }, []);
+      
+      return { instance };
+    };
+
+    const useScradarElement = (config, deps = []) => {
+      const elementRef = useRef(null);
+      
+      useEffect(() => {
+        if (elementRef.current) {
+          const configStr = JSON.stringify(config);
+          elementRef.current.setAttribute('data-scradar', configStr);
+          
+          // Update Scradar instance
+          const scradarInstance = window.globalScradar || new Scradar();
+          scradarInstance.update();
+        }
+      }, deps);
+      
+      return elementRef;
+    };
+
+    const useScradarConfigs = (configs) => {
+      useEffect(() => {
+        if (window.Scradar) {
+          window.Scradar.configs = configs;
+        }
+      }, [configs]);
+    };
+
+    // Hero Section Component
+    const HeroSection = () => {
+      const elementRef = useScradarElement({ visibility: true });
+      
+      return (
+        <section className="section hero">
+          <div 
+            ref={elementRef}
+            className="scradar scradar__fade-in--up scradar__slow" 
+            style={{ '--fade-distance': '80px' }}
+          >
+            <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎯 Scradar React Demo</h1>
+            <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
+              Enhanced React integration with SPA routing support
+            </p>
+            
+            <div className="demo-controls">
+              <h4>React-Specific Features</h4>
+              <div className="feature-grid">
+                <div className="feature-item">
+                  <h4>🔄 Global Instance</h4>
+                  <p>Single Scradar instance shared across all components</p>
+                </div>
+                <div className="feature-item">
+                  <h4>🚀 SPA Routing</h4>
+                  <p>Automatic updates on route changes</p>
+                </div>
+                <div className="feature-item">
+                  <h4>⚡ Performance</h4>
+                  <p>Memoized options and efficient re-renders</p>
+                </div>
+                <div className="feature-item">
+                  <h4>🧹 Memory Safe</h4>
+                  <p>Automatic cleanup prevents memory leaks</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Progress Priority Demo Component
+    const ProgressPriorityDemo = () => {
+      const defaultRef = useScradarElement({ visibility: true });
+      const fillRef = useScradarElement({ fill: true });
+      const peakRef = useScradarElement({ visibility: true, peak: [0, 0.5, 1] });
+      
+      return (
+        <section className="section">
+          <h2 className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+            Progress Priority System
+          </h2>
+          <p className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+            Automatic selection of the most appropriate progress value
+          </p>
+          
+          <div className="cards-container">
+            <div ref={defaultRef} className="card scradar scradar__fade-in">
+              <h3>Default (Visibility)</h3>
+              <p>Uses visibility progress by default</p>
+              <div className="code-block">
+                {`const elementRef = useScradarElement({ visibility: true });`}
+              </div>
+            </div>
+            
+            <div ref={fillRef} className="card scradar scradar__fade-in">
+              <h3>Fill Priority</h3>
+              <p>Uses fill progress (no peak, so fill is used)</p>
+              <div className="code-block">
+                {`const elementRef = useScradarElement({ fill: true });`}
+              </div>
+            </div>
+            
+            <div ref={peakRef} className="card scradar scradar__fade-in">
+              <h3>Peak Priority</h3>
+              <p>Uses peak progress (highest priority)</p>
+              <div className="code-block">
+                {`const elementRef = useScradarElement({ 
+  visibility: true, 
+  peak: [0, 0.5, 1] 
+});`}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Dynamic Configuration Component
+    const DynamicConfigDemo = () => {
+      const [shouldAnimate, setShouldAnimate] = useState(true);
+      const [animationType, setAnimationType] = useState('fade-in');
+      
+      const config = useMemo(() => ({
+        visibility: true,
+        peak: shouldAnimate ? [0, 0.5, 1] : null,
+        [animationType]: true
+      }), [shouldAnimate, animationType]);
+      
+      const elementRef = useScradarElement(config, [shouldAnimate, animationType]);
+      
+      return (
+        <section className="section" style={{ background: '#2c3e50', color: 'white' }}>
+          <h2 className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+            Dynamic Configuration
+          </h2>
+          <p className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+            Reactive configuration updates with React state
+          </p>
+          
+          <div className="demo-controls">
+            <h4>Toggle Animation Settings</h4>
+            <div className="control-group">
+              <label>
+                Peak Animation:
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={shouldAnimate}
+                    onChange={(e) => setShouldAnimate(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+                {shouldAnimate ? 'Enabled' : 'Disabled'}
+              </label>
+              
+              <select 
+                value={animationType} 
+                onChange={(e) => setAnimationType(e.target.value)}
+                style={{ padding: '0.5rem', borderRadius: '4px' }}
+              >
+                <option value="fade-in">Fade In</option>
+                <option value="scale-in">Scale In</option>
+                <option value="slide-reveal">Slide Reveal</option>
+              </select>
+            </div>
+          </div>
+          
+          <div ref={elementRef} className={`card scradar scradar__${animationType}`} 
+               style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+            <h3>Dynamic Element</h3>
+            <p>This element's configuration changes based on React state</p>
+            <div className="code-block">
+              {`const config = useMemo(() => ({
+  visibility: true,
+  peak: shouldAnimate ? [0, 0.5, 1] : null,
+  [animationType]: true
+}), [shouldAnimate, animationType]);
+
+const elementRef = useScradarElement(config, [shouldAnimate, animationType]);`}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Progress Bar Component
+    const ProgressBarDemo = () => {
+      const progressRef = useScradarElement({ fill: true });
+      const slideRef = useScradarElement({ fill: true });
+      
+      return (
+        <section className="section progress-section scradar" data-scradar="{fill: true}">
+          <div className="progress-container">
+            <h2 className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+              Fill-based Animations
+            </h2>
+            <p className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+              Perfect for progress indicators and content reveals
+            </p>
+            
+            <div ref={progressRef} className="card scradar__progress-bar" style={{ margin: '2rem auto' }}>
+              <h3>Progress Bar</h3>
+              <p>This fills up as you scroll through this section</p>
+              <div className="progress-bar"></div>
+            </div>
+            
+            <div ref={slideRef} className="card scradar__slide-reveal" style={{ margin: '2rem auto' }}>
+              <h3>Slide Reveal</h3>
+              <p>Content reveals with gradient masking for smooth edges</p>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Peak Animations Component
+    const PeakAnimationsDemo = () => {
+      const bounceRef = useScradarElement({ visibility: true, peak: [0, 0.5, 1] });
+      const pulseRef = useScradarElement({ visibility: true, peak: [0, 0.5, 1] });
+      const glowRef = useScradarElement({ visibility: true, peak: [0, 0.5, 1] });
+      
+      return (
+        <section className="section" style={{ background: '#34495e' }}>
+          <h2 className="scradar scradar__fade-in" data-scradar="{visibility: true}" style={{ color: 'white' }}>
+            Peak-based Animations
+          </h2>
+          <p className="scradar scradar__fade-in" data-scradar="{visibility: true}" style={{ color: 'white' }}>
+            Rise and fall effects with peak progress
+          </p>
+          
+          <div className="cards-container">
+            <div ref={bounceRef} className="card scradar scradar__bounce" 
+                 style={{ background: 'rgba(255,255,255,0.9)', color: '#333' }}>
+              <h3>Bounce Effect</h3>
+              <p>Uses peak progress for natural bounce animation</p>
+            </div>
+            
+            <div ref={pulseRef} className="card scradar scradar__pulse" 
+                 style={{ background: 'rgba(255,255,255,0.9)', color: '#333' }}>
+              <h3>Pulse Effect</h3>
+              <p>Pulses at the peak of visibility</p>
+            </div>
+            
+            <div ref={glowRef} className="card scradar scradar__glow" 
+                 style={{ background: 'rgba(255,255,255,0.9)', color: '#333' }}>
+              <h3>Glow Effect</h3>
+              <p>Glows brighter at peak visibility</p>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // SPA Routing Demo Component
+    const SPARoutingDemo = () => {
+      const [currentRoute, setCurrentRoute] = useState('/home');
+      
+      const simulateRouteChange = useCallback(() => {
+        const routes = ['/home', '/about', '/contact', '/products'];
+        const nextRoute = routes[Math.floor(Math.random() * routes.length)];
+        setCurrentRoute(nextRoute);
+        
+        // Simulate route change
+        window.history.pushState({}, '', nextRoute);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }, []);
+      
+      const homeRef = useScradarElement({ visibility: true });
+      const aboutRef = useScradarElement({ visibility: true, peak: [0, 0.5, 1] });
+      const contactRef = useScradarElement({ fill: true });
+      const productsRef = useScradarElement({ visibility: true });
+      
+      return (
+        <section className="section" style={{ background: '#e74c3c', color: 'white' }}>
+          <h2 className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+            SPA Routing Support
+          </h2>
+          <p className="scradar scradar__fade-in" data-scradar="{visibility: true}">
+            Automatic handling of route changes in React Router, Next.js, etc.
+          </p>
+          
+          <div className="demo-controls">
+            <h4>Current Route: {currentRoute}</h4>
+            <div className="control-group">
+              <button className="button" onClick={simulateRouteChange}>
+                Simulate Route Change
+              </button>
+            </div>
+          </div>
+          
+          <div className="cards-container">
+            <div ref={homeRef} className="card" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+              <h3>React Router v6</h3>
+              <p>Automatic updates on navigation</p>
+              <div className="code-block">
+                {`// Automatically handled by useScradar hook
+const scradar = useScradar();`}
+              </div>
+            </div>
+            
+            <div ref={aboutRef} className="card" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+              <h3>Next.js</h3>
+              <p>Seamless integration with App Router</p>
+              <div className="code-block">
+                {`// pages/_app.js
+function MyApp({ Component, pageProps }) {
+  const scradar = useScradar();
+  return <Component {...pageProps} />;
+}`}
+              </div>
+            </div>
+            
+            <div ref={contactRef} className="card" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+              <h3>Memory Management</h3>
+              <p>Automatic cleanup prevents memory leaks</p>
+              <div className="code-block">
+                {`// No manual cleanup needed
+// Handled automatically by React hooks`}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Final Section Component
+    const FinalSection = () => {
+      const elementRef = useScradarElement({ visibility: true });
+      
+      return (
+        <section className="section hero">
+          <div ref={elementRef} className="scradar scradar__rotate scradar__slow">
+            <h2>🎯 Scradar React</h2>
+            <p>Enhanced React integration with modern patterns</p>
+            <div className="demo-controls">
+              <h4>Key Benefits</h4>
+              <div className="feature-grid">
+                <div className="feature-item">
+                  <h4>⚡ Performance</h4>
+                  <p>Global instance sharing reduces memory usage</p>
+                </div>
+                <div className="feature-item">
+                  <h4>🔄 Reactive</h4>
+                  <p>Dynamic configurations with React hooks</p>
+                </div>
+                <div className="feature-item">
+                  <h4>🚀 SPA Ready</h4>
+                  <p>Automatic route change handling</p>
+                </div>
+                <div className="feature-item">
+                  <h4>🧹 Clean</h4>
+                  <p>Automatic cleanup and memory management</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Main App Component
+    const App = () => {
+      const { instance } = useScradar({ debug: true });
+      
+      // Global configurations
+      useScradarConfigs({
+        section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] },
+        section2: (element) => ({
+          visibility: true,
+          once: element.classList.contains('once-only')
+        })
+      });
+      
+      useEffect(() => {
+        console.log('Scradar React Demo initialized with', instance?.elements?.length, 'elements');
+      }, [instance]);
+      
+      return (
+        <>
+          <div className="react-version">React 18 + Hooks</div>
+          <HeroSection />
+          <ProgressPriorityDemo />
+          <DynamicConfigDemo />
+          <ProgressBarDemo />
+          <PeakAnimationsDemo />
+          <SPARoutingDemo />
+          <FinalSection />
+        </>
+      );
+    };
+
+    // Render the app
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html> 
