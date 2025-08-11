@@ -82,7 +82,13 @@ export function updateDataAndCss(targets, settings, type, value) {
   
   targets = Array.isArray(targets) ? targets : [targets];
   const prefix = settings.prefix ? settings.prefix + '-' : '';
-  const types = settings[type] || ['css'];
+  
+  let types;
+  if (type === 'peak') {
+    types = ['css'];
+  } else {
+    types = settings[type] || ['css'];
+  }
   
   if (!Array.isArray(types)) {
     console.error('🎯 Scradar Configuration Error:', {

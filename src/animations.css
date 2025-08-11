@@ -5,17 +5,29 @@
 
 /* Animation CSS Variables - Can be overridden */
 :root {
-  --scradar-fade-distance: 30px;
-  --scradar-scale-start: 0.8;
-  --scradar-scale-amount: 0.1;
-  --scradar-parallax-slow: -20px;
-  --scradar-parallax-medium: -50px;
-  --scradar-parallax-fast: -100px;
-  --scradar-rotate-amount: 360deg;
-  --scradar-tilt-amount: 5deg;
-  --scradar-bounce-distance: -20px;
-  --scradar-transition-duration: 0.6s;
-  --scradar-transition-easing: ease;
+  --fade-distance: 30px;
+  --scale-start: 0.8;
+  --scale-amount: 0.1;
+  --parallax-slow: -20px;
+  --parallax-medium: -50px;
+  --parallax-fast: -100px;
+  --rotate-amount: 360deg;
+  --tilt-amount: 5deg;
+  --bounce-distance: -20px;
+  --transition-duration: 0.6s;
+  --transition-easing: ease;
+}
+
+/* Progress type variables - defined on scradar elements */
+.scradar {
+  /* Priority order: peak > visibility > fill > cover > enter > exit */
+  --progress: var(--peak, var(--visibility, var(--fill, var(--cover, var(--enter, var(--exit, 0))))));
+  --progress-peak: var(--peak, 0);
+  --progress-visibility: var(--visibility, 0);
+  --progress-fill: var(--fill, 0);
+  --progress-cover: var(--cover, 0);
+  --progress-enter: var(--enter, 0);
+  --progress-exit: var(--exit, 0);
 }
 
 /* =============================================================================
@@ -23,27 +35,27 @@
    ============================================================================= */
 
 .scradar__fade-in {
-  opacity: calc(var(--visibility, 0));
+  opacity: calc(var(--progress));
 }
 
 .scradar__fade-in--up {
-  opacity: calc(var(--visibility, 0));
-  transform: translateY(calc((1 - var(--visibility, 0)) * var(--scradar-fade-distance)));
+  opacity: calc(var(--progress));
+  transform: translateY(calc((1 - var(--progress)) * var(--fade-distance)));
 }
 
 .scradar__fade-in--down {
-  opacity: calc(var(--visibility, 0));
-  transform: translateY(calc((1 - var(--visibility, 0)) * var(--scradar-fade-distance) * -1));
+  opacity: calc(var(--progress));
+  transform: translateY(calc((1 - var(--progress)) * var(--fade-distance) * -1));
 }
 
 .scradar__fade-in--left {
-  opacity: calc(var(--visibility, 0));
-  transform: translateX(calc((1 - var(--visibility, 0)) * var(--scradar-fade-distance) * -1));
+  opacity: calc(var(--progress));
+  transform: translateX(calc((1 - var(--progress)) * var(--fade-distance) * -1));
 }
 
 .scradar__fade-in--right {
-  opacity: calc(var(--visibility, 0));
-  transform: translateX(calc((1 - var(--visibility, 0)) * var(--scradar-fade-distance)));
+  opacity: calc(var(--progress));
+  transform: translateX(calc((1 - var(--progress)) * var(--fade-distance)));
 }
 
 /* =============================================================================
@@ -51,12 +63,12 @@
    ============================================================================= */
 
 .scradar__scale-in {
-  opacity: calc(var(--visibility, 0));
-  transform: scale(calc(var(--scradar-scale-start) + var(--visibility, 0) * (1 - var(--scradar-scale-start))));
+  opacity: calc(var(--progress));
+  transform: scale(calc(var(--scale-start) + var(--progress) * (1 - var(--scale-start))));
 }
 
 .scradar__scale-up {
-  transform: scale(calc(1 + var(--visibility, 0) * var(--scradar-scale-amount)));
+  transform: scale(calc(1 + var(--progress) * var(--scale-amount)));
 }
 
 /* =============================================================================
@@ -64,15 +76,15 @@
    ============================================================================= */
 
 .scradar__parallax--slow {
-  transform: translateY(calc(var(--visibility, 0) * var(--scradar-parallax-slow)));
+  transform: translateY(calc(var(--progress) * var(--parallax-slow)));
 }
 
 .scradar__parallax--medium {
-  transform: translateY(calc(var(--visibility, 0) * var(--scradar-parallax-medium)));
+  transform: translateY(calc(var(--progress) * var(--parallax-medium)));
 }
 
 .scradar__parallax--fast {
-  transform: translateY(calc(var(--visibility, 0) * var(--scradar-parallax-fast)));
+  transform: translateY(calc(var(--progress) * var(--parallax-fast)));
 }
 
 /* =============================================================================
@@ -90,13 +102,12 @@
   top: 0;
   left: 0;
   height: 100%;
-  width: calc(var(--fill, 0) * 100%);
+  width: calc(var(--progress) * 100%);
   background: currentColor;
 }
 
 .scradar__slide-reveal {
-  clip-path: inset(0 calc(100% - var(--fill, 0) * 100%) 0 0);
-  /* transition: clip-path calc(var(--scradar-transition-duration) * 0.8) var(--scradar-transition-easing); */
+  clip-path: inset(0 calc(100% - var(--progress) * 100%) 0 0);
 }
 
 /* =============================================================================
@@ -105,8 +116,8 @@
 
 .scradar__text-reveal {
   background: linear-gradient(90deg, 
-    currentColor calc(var(--visibility, 0) * 100% - 15px),
-    transparent calc(var(--visibility, 0) * 100% + 15px),
+    currentColor calc(var(--progress) * 100% - 15px),
+    transparent calc(var(--progress) * 100% + 15px),
     transparent 100%
   );
   background-clip: text;
@@ -118,7 +129,7 @@
   overflow: hidden;
   white-space: nowrap;
   border-right: 2px solid currentColor;
-  width: calc(var(--visibility, 0) * 100%);
+  width: calc(var(--progress) * 100%);
 }
 
 /* =============================================================================
@@ -128,8 +139,8 @@
 .scradar__stagger--fade-in .scradar__stagger-item {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity var(--scradar-transition-duration) var(--scradar-transition-easing),
-              transform var(--scradar-transition-duration) var(--scradar-transition-easing);
+  transition: opacity var(--transition-duration) var(--transition-easing),
+              transform var(--transition-duration) var(--transition-easing);
 }
 
 .scradar__stagger--fade-in[data-scradar-in="1"] .scradar__stagger-item:nth-child(1) { 
@@ -178,11 +189,11 @@
    ============================================================================= */
 
 .scradar__rotate {
-  transform: rotate(calc(var(--visibility, 0) * var(--scradar-rotate-amount)));
+  transform: rotate(calc(var(--progress) * var(--rotate-amount)));
 }
 
 .scradar__tilt {
-  transform: rotate(calc(var(--visibility, 0) * var(--scradar-tilt-amount) - var(--scradar-tilt-amount) / 2));
+  transform: rotate(calc(var(--progress) * var(--tilt-amount) - var(--tilt-amount) / 2));
 }
 
 /* =============================================================================
@@ -190,11 +201,11 @@
    ============================================================================= */
 
 .scradar__color-shift {
-  filter: hue-rotate(calc(var(--visibility, 0) * 180deg));
+  filter: hue-rotate(calc(var(--progress) * 180deg));
 }
 
 .scradar__blur-in {
-  filter: blur(calc((1 - var(--visibility, 0)) * 10px));
+  filter: blur(calc((1 - var(--progress)) * 10px));
 }
 
 /* =============================================================================
@@ -202,20 +213,16 @@
    ============================================================================= */
 
 .scradar__bounce {
-  transform: translateY(calc(var(--peak, 0) * var(--scradar-bounce-distance)));
-  transition: transform calc(var(--scradar-transition-duration) * 0.5) var(--scradar-transition-easing);
+  transform: translateY(calc(var(--progress) * var(--bounce-distance)));
 }
 
 .scradar__pulse {
-  transform: scale(calc(1 + var(--peak, 0) * var(--scradar-scale-amount)));
-  opacity: calc(0.7 + var(--peak, 0) * 0.3);
-  transition: transform calc(var(--scradar-transition-duration) * 0.5) var(--scradar-transition-easing),
-              opacity calc(var(--scradar-transition-duration) * 0.5) var(--scradar-transition-easing);
+  transform: scale(calc(1 + var(--progress) * var(--scale-amount)));
+  opacity: calc(0.7 + var(--progress) * 0.3);
 }
 
 .scradar__glow {
-  box-shadow: 0 0 calc(var(--peak, 0) * 20px) calc(var(--peak, 0) * 10px) rgba(79, 195, 247, calc(var(--peak, 0) * 0.3));
-  transition: box-shadow calc(var(--scradar-transition-duration) * 0.5) var(--scradar-transition-easing);
+  box-shadow: 0 0 calc(var(--progress) * 20px) calc(var(--progress) * 10px) rgba(79, 195, 247, calc(var(--progress) * 0.3));
 }
 
 /* =============================================================================
@@ -223,14 +230,151 @@
    ============================================================================= */
 
 .scradar__zoom-fade {
-  opacity: calc(var(--visibility, 0));
-  transform: scale(calc(var(--scradar-scale-start) + var(--visibility, 0) * (1 - var(--scradar-scale-start))))
-             translateY(calc((1 - var(--visibility, 0)) * var(--scradar-fade-distance)));
+  opacity: calc(var(--progress));
+  transform: scale(calc(var(--scale-start) + var(--progress) * (1 - var(--scale-start))))
+             translateY(calc((1 - var(--progress)) * var(--fade-distance)));
 }
 
 .scradar__slide-scale {
-  transform: translateX(calc((1 - var(--visibility, 0)) * var(--scradar-fade-distance)))
-             scale(calc(var(--scradar-scale-start) + var(--visibility, 0) * (1 - var(--scradar-scale-start))));
+  transform: translateX(calc((1 - var(--progress)) * var(--fade-distance)))
+             scale(calc(var(--scale-start) + var(--progress) * (1 - var(--scale-start))));
+}
+
+/* =============================================================================
+   TRIGGER-BASED ANIMATIONS (data-scradar-in attribute)
+   ============================================================================= */
+
+/* Trigger animations - when data-scradar-in="1" is set */
+.scradar__trigger-fade-in[data-scradar-in="1"], .scradar[data-scradar-in="1"] .scradar__trigger-fade-in {
+  opacity: 1;
+  animation: scradar-fade-in var(--transition-duration) var(--transition-easing) forwards;
+}
+
+.scradar__trigger-fade-in--up[data-scradar-in="1"], .scradar[data-scradar-in="1"] .scradar__trigger-fade-in--up {
+  opacity: 1;
+  transform: translateY(0);
+  animation: scradar-fade-in-up var(--transition-duration) var(--transition-easing) forwards;
+}
+
+.scradar__trigger-scale-in[data-scradar-in="1"], .scradar[data-scradar-in="1"] .scradar__trigger-scale-in {
+  opacity: 1;
+  transform: scale(1);
+  animation: scradar-scale-in var(--transition-duration) var(--transition-easing) forwards;
+}
+
+.scradar__trigger-bounce[data-scradar-in="1"], .scradar[data-scradar-in="1"] .scradar__trigger-bounce {
+  animation: scradar-bounce var(--transition-duration) var(--transition-easing) forwards;
+}
+
+.scradar__trigger-pulse[data-scradar-in="1"], .scradar[data-scradar-in="1"] .scradar__trigger-pulse {
+  animation: scradar-pulse var(--transition-duration) var(--transition-easing) forwards;
+}
+
+.scradar__trigger-glow[data-scradar-in="1"], .scradar[data-scradar-in="1"] .scradar__trigger-glow {
+  animation: scradar-glow var(--transition-duration) var(--transition-easing) forwards;
+}
+
+/* Keyframe animations for trigger-based effects */
+@keyframes scradar-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scradar-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--fade-distance));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scradar-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--scale-start));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scradar-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40%, 43% {
+    transform: translateY(var(--bounce-distance));
+  }
+  70% {
+    transform: translateY(calc(var(--bounce-distance) * 0.6));
+  }
+  90% {
+    transform: translateY(calc(var(--bounce-distance) * 0.3));
+  }
+}
+
+@keyframes scradar-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(calc(1 + var(--scale-amount)));
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes scradar-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(79, 195, 247, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.3);
+  }
+}
+
+/* =============================================================================
+   PROGRESS TYPE MODIFIERS
+   ============================================================================= */
+
+/* Use different progress types */
+.scradar__use-visibility {
+  --progress: var(--progress-visibility);
+}
+
+.scradar__use-fill {
+  --progress: var(--progress-fill);
+}
+
+.scradar__use-peak {
+  --progress: var(--progress-peak);
+}
+
+.scradar__use-cover {
+  --progress: var(--progress-cover);
+}
+
+.scradar__use-enter {
+  --progress: var(--progress-enter);
+}
+
+.scradar__use-exit {
+  --progress: var(--progress-exit);
 }
 
 /* =============================================================================
@@ -239,39 +383,39 @@
 
 /* Custom timing functions */
 .scradar__ease-out-back {
-  --scradar-transition-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .scradar__ease-out-elastic {
-  --scradar-transition-easing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-easing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .scradar__ease-out-bounce {
-  --scradar-transition-easing: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  --transition-easing: cubic-bezier(0.68, -0.6, 0.32, 1.6);
 }
 
 /* Duration modifiers */
 .scradar__fast {
-  --scradar-transition-duration: 0.3s;
+  --transition-duration: 0.3s;
 }
 
 .scradar__slow {
-  --scradar-transition-duration: 1.2s;
+  --transition-duration: 1.2s;
 }
 
 .scradar__very-slow {
-  --scradar-transition-duration: 2s;
+  --transition-duration: 2s;
 }
 
 /* Distance modifiers */
 .scradar__small-distance {
-  --scradar-fade-distance: 15px;
+  --fade-distance: 15px;
 }
 
 .scradar__large-distance {
-  --scradar-fade-distance: 60px;
+  --fade-distance: 60px;
 }
 
 .scradar__huge-distance {
-  --scradar-fade-distance: 100px;
+  --fade-distance: 100px;
 }

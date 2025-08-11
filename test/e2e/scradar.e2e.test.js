@@ -113,6 +113,79 @@ describe('Scradar E2E Tests', () => {
     expect(parseFloat(progressValue)).toBeLessThanOrEqual(1);
   });
 
+  test('should handle peak progress CSS variables', async () => {
+    // Add a peak element to the page
+    await page.evaluate(() => {
+      const peakElement = document.createElement('div');
+      peakElement.className = 'scradar';
+      peakElement.setAttribute('data-scradar', '{visibility: true, peak: [0, 0.5, 1]}');
+      peakElement.style.height = '500px';
+      peakElement.textContent = 'Peak Test Element';
+      document.body.appendChild(peakElement);
+    });
+
+    await page.waitForTimeout(100);
+
+    // Scroll to trigger peak calculation
+    await page.evaluate(() => {
+      const peakElement = document.querySelector('[data-scradar*="peak"]');
+      peakElement.scrollIntoView({ behavior: 'instant' });
+    });
+    await page.waitForTimeout(100);
+
+    const peakValue = await page.evaluate(() => {
+      const el = document.querySelector('[data-scradar*="peak"]');
+      return getComputedStyle(el).getPropertyValue('--peak');
+    });
+
+    expect(peakValue).toBeTruthy();
+    expect(parseFloat(peakValue)).toBeGreaterThanOrEqual(0);
+    expect(parseFloat(peakValue)).toBeLessThanOrEqual(1);
+  });
+
+  test('should handle progress priority system', async () => {
+    // Add elements with different progress types
+    await page.evaluate(() => {
+      const peakElement = document.createElement('div');
+      peakElement.className = 'scradar';
+      peakElement.setAttribute('data-scradar', '{visibility: true, peak: [0, 0.5, 1]}');
+      peakElement.style.height = '300px';
+      peakElement.textContent = 'Peak Priority Element';
+      document.body.appendChild(peakElement);
+
+      const fillElement = document.createElement('div');
+      fillElement.className = 'scradar';
+      fillElement.setAttribute('data-scradar', '{fill: true}');
+      fillElement.style.height = '300px';
+      fillElement.textContent = 'Fill Element';
+      document.body.appendChild(fillElement);
+    });
+
+    await page.waitForTimeout(100);
+
+    // Scroll to trigger calculations
+    await page.evaluate(() => {
+      window.scrollTo(0, 400);
+    });
+    await page.waitForTimeout(100);
+
+    const peakProgress = await page.evaluate(() => {
+      const el = document.querySelector('[data-scradar*="peak"]');
+      return getComputedStyle(el).getPropertyValue('--progress');
+    });
+
+    const fillProgress = await page.evaluate(() => {
+      const el = document.querySelector('[data-scradar*="fill"]');
+      return getComputedStyle(el).getPropertyValue('--progress');
+    });
+
+    // Both should have progress values
+    expect(peakProgress).toBeTruthy();
+    expect(fillProgress).toBeTruthy();
+    expect(parseFloat(peakProgress)).toBeGreaterThanOrEqual(0);
+    expect(parseFloat(fillProgress)).toBeGreaterThanOrEqual(0);
+  });
+
   test('should handle step changes', async () => {
     let stepChangeData = null;
 
