@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scradar Vue Demo</title>
+  <link rel="stylesheet" href="../dist/animations.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .section {
+      min-height: 100vh;
+      padding: 4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #42b883 0%, #35495e 100%);
+      color: white;
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 2rem 0;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h3 {
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .card p {
+      color: #7f8c8d;
+      margin-bottom: 1rem;
+    }
+
+    .progress-section {
+      background: #ecf0f1;
+    }
+
+    .progress-container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #bdc3c7;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar::after {
+      background: #42b883;
+      border-radius: 4px;
+    }
+
+    .button {
+      background: #42b883;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+      margin: 0.5rem;
+    }
+
+    .button:hover {
+      background: #369870;
+    }
+
+    .button.secondary {
+      background: #95a5a6;
+    }
+
+    .button.secondary:hover {
+      background: #7f8c8d;
+    }
+
+    .demo-controls {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    .demo-controls h4 {
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .control-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .code-block {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 1rem;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .feature-item h4 {
+      color: #42b883;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item p {
+      color: #bdc3c7;
+      font-size: 0.9rem;
+    }
+
+    .vue-version {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(66, 184, 131, 0.9);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .reactive-demo {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+      border: 2px solid rgba(66, 184, 131, 0.3);
+    }
+
+    .reactive-demo h4 {
+      color: #42b883;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin: 0 1rem;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #42b883;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Vue CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  
+  <!-- Scradar -->
+  <script src="../dist/scradar.min.js"></script>
+  
+  <script>
+    const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+
+    // Mock Scradar Vue composables for demo purposes
+    // In real usage, these would be imported from 'scradar/vue'
+    const useScradar = (options = {}) => {
+      const instance = ref(null);
+      
+      onMounted(() => {
+        instance.value = new Scradar(options);
+      });
+      
+      onUnmounted(() => {
+        if (instance.value) {
+          instance.value.destroy();
+        }
+      });
+      
+      return { instance };
+    };
+
+    const useScradarConfigs = (configs) => {
+      onMounted(() => {
+        if (window.Scradar) {
+          window.Scradar.configs = configs;
+        }
+      });
+    };
+
+    // Hero Section Component
+    const HeroSection = {
+      template: `
+        <section class="section hero">
+          <div 
+            class="scradar scradar__fade-in--up scradar__slow" 
+            :data-scradar="JSON.stringify({ visibility: true })"
+            style="--fade-distance: 80px"
+          >
+            <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">🎯 Scradar Vue Demo</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+              Enhanced Vue integration with Composition API and reactive directives
+            </p>
+            
+            <div class="demo-controls">
+              <h4>Vue-Specific Features</h4>
+              <div class="feature-grid">
+                <div class="feature-item">
+                  <h4>🔄 Reactive Directives</h4>
+                  <p>Automatic updates when binding values change</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🎨 Composition API</h4>
+                  <p>Modern Vue 3 patterns with useScradar composables</p>
+                </div>
+                <div class="feature-item">
+                  <h4>⚡ Global Instance</h4>
+                  <p>Single Scradar instance for the entire app</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🧹 Memory Safe</h4>
+                  <p>Automatic cleanup with component lifecycle</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Reactive Configuration Component
+    const ReactiveConfigDemo = {
+      setup() {
+        const isPeakEnabled = ref(true);
+        const animationType = ref('fade-in');
+        
+        const scradarConfig = computed(() => ({
+          visibility: true,
+          peak: isPeakEnabled.value ? [0, 0.5, 1] : null,
+          [animationType.value]: true
+        }));
+        
+        return {
+          isPeakEnabled,
+          animationType,
+          scradarConfig
+        };
+      },
+      template: `
+        <section class="section" style="background: #35495e; color: white;">
+          <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Reactive Configuration
+          </h2>
+          <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Dynamic configuration updates with Vue reactivity
+          </p>
+          
+          <div class="reactive-demo">
+            <h4>Toggle Animation Configuration</h4>
+            <div style="display: flex; align-items: center; justify-content: center; margin: 1rem 0;">
+              <span>Peak Animation:</span>
+              <label class="toggle-switch">
+                <input type="checkbox" v-model="isPeakEnabled">
+                <span class="slider"></span>
+              </label>
+              <span>{{ isPeakEnabled ? 'Enabled' : 'Disabled' }}</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: center; margin: 1rem 0;">
+              <span>Animation Type:</span>
+              <select v-model="animationType" style="padding: 0.5rem; border-radius: 4px; margin-left: 1rem;">
+                <option value="fade-in">Fade In</option>
+                <option value="scale-in">Scale In</option>
+                <option value="slide-reveal">Slide Reveal</option>
+              </select>
+            </div>
+            
+            <div 
+              class="card scradar scradar__fade-in" 
+              :class="'scradar__' + animationType"
+              :data-scradar="JSON.stringify(scradarConfig)"
+              style="background: rgba(255,255,255,0.1); color: white;"
+            >
+              <h3>Reactive Element</h3>
+              <p>This element's configuration changes based on Vue reactivity</p>
+              <div class="code-block">
+                &lt;div v-scradar="scradarConfig" class="scradar scradar__fade-in"&gt;
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Vue Directives Demo Component
+    const VueDirectivesDemo = {
+      template: `
+        <section class="section">
+          <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Vue Directives
+          </h2>
+          <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Powerful directive-based configuration
+          </p>
+          
+          <div class="cards-container">
+            <div class="card scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+              <h3>Basic Directive</h3>
+              <p>Simple visibility animation</p>
+              <div class="code-block">
+                &lt;div v-scradar="{ visibility: true }" class="scradar scradar__fade-in"&gt;
+              </div>
+            </div>
+            
+            <div class="card scradar scradar__fade-in" :data-scradar="JSON.stringify({ fill: true })">
+              <h3>Fill Animation</h3>
+              <p>Progress-based fill animation</p>
+              <div class="code-block">
+                &lt;div v-scradar="{ fill: true }" class="scradar scradar__fade-in"&gt;
+              </div>
+            </div>
+            
+            <div class="card scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true, peak: [0, 0.5, 1] })">
+              <h3>Peak Animation</h3>
+              <p>Rise and fall effect</p>
+              <div class="code-block">
+                &lt;div v-scradar="{ visibility: true, peak: [0, 0.5, 1] }" class="scradar scradar__fade-in"&gt;
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Composition API Demo Component
+    const CompositionAPIDemo = {
+      setup() {
+        const { instance } = useScradar({ debug: true });
+        
+        return { instance };
+      },
+      template: `
+        <section class="section" style="background: #2c3e50; color: white;">
+          <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Composition API Integration
+          </h2>
+          <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Modern Vue 3 patterns with Scradar
+          </p>
+          
+          <div class="cards-container">
+            <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+              <h3>useScradar Composable</h3>
+              <p>Global instance management</p>
+              <div class="code-block">
+                const { instance, update, destroy } = useScradar({ debug: true });
+              </div>
+            </div>
+            
+            <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+              <h3>Reactive Configuration</h3>
+              <p>Computed properties for dynamic config</p>
+              <div class="code-block">
+                const scradarConfig = computed(() => ({
+                  visibility: true,
+                  peak: isVisible.value ? [0, 0.5, 1] : null
+                }));
+              </div>
+            </div>
+            
+            <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+              <h3>Global Configs</h3>
+              <p>App-wide configuration management</p>
+              <div class="code-block">
+                useScradarConfigs({
+                  section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75] }
+                });
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Progress Bar Component
+    const ProgressBarDemo = {
+      template: `
+        <section class="section progress-section scradar" :data-scradar="JSON.stringify({ fill: true })">
+          <div class="progress-container">
+            <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+              Fill-based Animations
+            </h2>
+            <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+              Perfect for progress indicators and content reveals
+            </p>
+            
+            <div class="card scradar__progress-bar" style="margin: 2rem auto;">
+              <h3>Progress Bar</h3>
+              <p>This fills up as you scroll through this section</p>
+              <div class="progress-bar"></div>
+            </div>
+            
+            <div class="card scradar__slide-reveal" style="margin: 2rem auto;">
+              <h3>Slide Reveal</h3>
+              <p>Content reveals with gradient masking for smooth edges</p>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Peak Animations Component
+    const PeakAnimationsDemo = {
+      template: `
+        <section class="section" style="background: #34495e;">
+          <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })" style="color: white;">
+            Peak-based Animations
+          </h2>
+          <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })" style="color: white;">
+            Rise and fall effects with peak progress
+          </p>
+          
+          <div class="cards-container">
+            <div class="card scradar scradar__bounce" :data-scradar="JSON.stringify({ visibility: true, peak: [0, 0.5, 1] })" style="background: rgba(255,255,255,0.9); color: #333;">
+              <h3>Bounce Effect</h3>
+              <p>Uses peak progress for natural bounce animation</p>
+            </div>
+            
+            <div class="card scradar scradar__pulse" :data-scradar="JSON.stringify({ visibility: true, peak: [0, 0.5, 1] })" style="background: rgba(255,255,255,0.9); color: #333;">
+              <h3>Pulse Effect</h3>
+              <p>Pulses at the peak of visibility</p>
+            </div>
+            
+            <div class="card scradar scradar__glow" :data-scradar="JSON.stringify({ visibility: true, peak: [0, 0.5, 1] })" style="background: rgba(255,255,255,0.9); color: #333;">
+              <h3>Glow Effect</h3>
+              <p>Glows brighter at peak visibility</p>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Vue 2/3 Compatibility Demo Component
+    const VueCompatibilityDemo = {
+      setup() {
+        const isVue3 = ref(true);
+        
+        const toggleVueVersion = () => {
+          isVue3.value = !isVue3.value;
+        };
+        
+        return {
+          isVue3,
+          toggleVueVersion
+        };
+      },
+      template: `
+        <section class="section" style="background: #e74c3c; color: white;">
+          <h2 class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Vue 2/3 Compatibility
+          </h2>
+          <p class="scradar scradar__fade-in" :data-scradar="JSON.stringify({ visibility: true })">
+            Works seamlessly with both Vue 2 and Vue 3
+          </p>
+          
+          <div class="demo-controls">
+            <h4>Framework Integration</h4>
+            <div class="control-group">
+              <button class="button" @click="toggleVueVersion">Toggle Vue Version</button>
+            </div>
+          </div>
+          
+          <div class="cards-container">
+            <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+              <h3>Vue 3 + Composition API</h3>
+              <p>Modern reactive patterns</p>
+              <div class="code-block">
+                import { useScradar } from 'scradar/vue';
+                const { instance } = useScradar();
+              </div>
+            </div>
+            
+            <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+              <h3>Vue 2 + Options API</h3>
+              <p>Traditional Vue patterns</p>
+              <div class="code-block">
+                import { ScradarVue2 } from 'scradar/vue';
+                Vue.use(ScradarVue2);
+              </div>
+            </div>
+            
+            <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+              <h3>Nuxt.js Integration</h3>
+              <p>Seamless SSR support</p>
+              <div class="code-block">
+                // plugins/scradar.js
+                export default ({ app }) => {
+                  app.use(ScradarVue);
+                };
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Final Section Component
+    const FinalSection = {
+      template: `
+        <section class="section hero">
+          <div class="scradar scradar__rotate scradar__slow" :data-scradar="JSON.stringify({ visibility: true })">
+            <h2>🎯 Scradar Vue</h2>
+            <p>Enhanced Vue integration with reactive patterns</p>
+            <div class="demo-controls">
+              <h4>Key Benefits</h4>
+              <div class="feature-grid">
+                <div class="feature-item">
+                  <h4>⚡ Reactive</h4>
+                  <p>Automatic updates with Vue reactivity</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🎨 Modern</h4>
+                  <p>Composition API and reactive directives</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🔄 Compatible</h4>
+                  <p>Vue 2 and Vue 3 support</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🧹 Clean</h4>
+                  <p>Automatic lifecycle management</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+    };
+
+    // Main App Component
+    const App = {
+      components: {
+        HeroSection,
+        ReactiveConfigDemo,
+        VueDirectivesDemo,
+        CompositionAPIDemo,
+        ProgressBarDemo,
+        PeakAnimationsDemo,
+        VueCompatibilityDemo,
+        FinalSection
+      },
+      setup() {
+        const { instance } = useScradar({ debug: true });
+        
+        // Global configurations
+        useScradarConfigs({
+          section1: { visibility: true, visibilityStep: [0.25, 0.5, 0.75], once: true }, // Added once: true
+          section2: (element) => ({
+            visibility: true,
+            once: element.classList.contains('once-only')
+          })
+        });
+        
+        onMounted(() => {
+          console.log('Scradar Vue Demo initialized with', instance.value?.elements?.length, 'elements');
+        });
+        
+        return {};
+      },
+      template: `
+        <div>
+          <div class="vue-version">Vue 3 + Composition API</div>
+          <HeroSection />
+          <ReactiveConfigDemo />
+          <VueDirectivesDemo />
+          <CompositionAPIDemo />
+          <ProgressBarDemo />
+          <PeakAnimationsDemo />
+          <VueCompatibilityDemo />
+          <FinalSection />
+        </div>
+      `
+    };
+
+    // Create and mount the Vue app
+    const app = createApp(App);
+    app.mount('#app');
+  </script>
+</body>
+</html> 
