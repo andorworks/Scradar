@@ -35,12 +35,12 @@
     },
     "./animations.css": "./dist/animations.css",
     "./react": {
-      "import": "./frameworks/react/index.js",
-      "types": "./frameworks/react/index.d.ts"
+      "import": "./dist/react.esm.js",
+      "types": "./dist/react.d.ts"
     },
     "./vue": {
-      "import": "./frameworks/vue/index.js",
-      "types": "./frameworks/vue/index.d.ts"
+      "import": "./dist/vue.esm.js",
+      "types": "./dist/vue.d.ts"
     }
   },
   "files": [
@@ -51,9 +51,10 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "rollup -c && npm run build:types && npm run build:css",
+    "build": "rollup -c && npm run build:types && npm run build:css && npm run build:framework-types",
     "build:types": "cp src/scradar.d.ts dist/scradar.d.ts",
     "build:css": "cp src/animations.css dist/animations.css",
+    "build:framework-types": "cp frameworks/react/index.d.ts dist/react.d.ts && cp frameworks/vue/index.d.ts dist/vue.d.ts",
     "dev": "rollup -c -w",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -62,6 +63,10 @@
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint src/**/*.js --fix",
     "prepublishOnly": "npm run lint && npm run test && npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "vue": ">=3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
