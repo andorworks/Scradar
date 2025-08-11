@@ -3,9 +3,8 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 
-const config = {
-  input: 'src/index.js',
-  external: [],
+const baseConfig = {
+  external: ['react', 'vue'],
   plugins: [
     nodeResolve(),
     babel({
@@ -16,17 +15,19 @@ const config = {
 };
 
 export default [
-  // ESM build
+  // Main ESM build
   {
-    ...config,
+    ...baseConfig,
+    input: 'src/index.js',
     output: {
       file: 'dist/scradar.esm.js',
       format: 'es'
     }
   },
-  // UMD build
+  // Main UMD build
   {
-    ...config,
+    ...baseConfig,
+    input: 'src/index.js',
     output: {
       file: 'dist/scradar.umd.js',
       format: 'umd',
@@ -35,15 +36,34 @@ export default [
   },
   // Minified UMD build
   {
-    ...config,
+    ...baseConfig,
+    input: 'src/index.js',
     output: {
       file: 'dist/scradar.min.js',
       format: 'umd',
       name: 'Scradar'
     },
     plugins: [
-      ...config.plugins,
+      ...baseConfig.plugins,
       terser()
     ]
+  },
+  // React framework build
+  {
+    ...baseConfig,
+    input: 'frameworks/react/index.js',
+    output: {
+      file: 'dist/react.esm.js',
+      format: 'es'
+    }
+  },
+  // Vue framework build
+  {
+    ...baseConfig,
+    input: 'frameworks/vue/index.js',
+    output: {
+      file: 'dist/vue.esm.js',
+      format: 'es'
+    }
   }
 ];

@@ -1,6 +1,25 @@
 import { App, DirectiveBinding } from 'vue';
 import { ScradarOptions, ScradarSettings } from '../../src/scradar';
 
+declare class Scradar {
+  static defaults: ScradarOptions;
+  static configs: Record<string, ScradarSettings | ((element: HTMLElement) => ScradarSettings)>;
+  
+  constructor(target?: string | ScradarOptions, options?: ScradarOptions);
+  
+  readonly elements: HTMLElement[];
+  readonly root: Element | Window;
+  readonly scroll: 1 | -1 | 0;
+  readonly progress: number;
+  
+  update(): void;
+  destroy(): void;
+  refresh(): void;
+  
+  on(event: string, callback: (detail: any) => void): void;
+  off(event: string, callback: (detail: any) => void): void;
+}
+
 export interface VueScradarOptions extends ScradarOptions {}
 
 export interface VueScradarConfigs {
